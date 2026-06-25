@@ -1,0 +1,772 @@
+# Golden Answers — ChatBI 基准测试标准答案
+#
+# L1: 基础查询（1-2 表，简单 SQL）
+# L2: 进阶查询（2-3 表，窗口函数）
+# L3: 中级分析（3-4 表，基础算法）
+#
+# 三级对比：
+#   Level 1 — SQL 语义等价（LLM Judge）
+#   Level 2 — 数值范围对比（min/max）
+#   Level 3 — 分析结论关键词覆盖（LLM Judge）
+
+questions:
+
+  # ===========================================================================
+  # L1 — 基础查询（20 题）
+  # ===========================================================================
+
+  # --- 跨领域综合分析（3 题）---
+  - id: "L1-01"
+    level: 1
+    question: "2023年哪些省份的经济总量最大？帮我列出GDP最高的前3个省份，同时看看它们的人均GDP大概是多少。"
+    expected_analysis_type: "detail"
+    expected_indicators: ["gdp", "per_capita_gdp"]
+    expected_tables: ["economic_indicator_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, e.gdp, e.per_capita_gdp\nFROM economic_indicator_data e\nJOIN admin_region_data a ON e.区划ID = a.区划ID\nWHERE e.统计年份 = '2023'\nORDER BY e.gdp DESC\nLIMIT 3"
+    expected_ranges:
+      gdp: {min: 0}
+      per_capita_gdp: {min: 0}
+      table_rows: {min: 1, max: 3}
+    expected_keywords: ["GDP最高", "前3", "人均GDP", "2023年", "经济总量"]
+
+  - id: "L1-02"
+    level: 1
+    question: "我想看看2022年环境比较好的省份是不是森林覆盖率也高。请帮我列出森林覆盖率排前5的省份，同时看看它们的空气质量（AQI）情况。"
+    expected_analysis_type: "detail"
+    expected_indicators: ["forest_coverage", "aqi"]
+    expected_tables: ["env_monitor_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, e.forest_coverage, e.aqi\nFROM env_monitor_data e\nJOIN admin_region_data a ON e.区划ID = a.区划ID\nWHERE e.统计年份 = '2022'\nORDER BY e.forest_coverage DESC\nLIMIT 5"
+    expected_ranges:
+      forest_coverage: {min: 0}
+      aqi: {min: 0}
+      table_rows: {min: 1, max: 5}
+    expected_keywords: ["森林覆盖率", "前5", "AQI", "空气质量", "2022年"]
+
+  - id: "L1-03"
+    level: 1
+    question: "2023年，经济最强和最弱的省份，它们的就业情况差别有多大？帮我分别列出GDP最高和最低的3个省份，看看它们的失业率分别是多少。"
+    expected_analysis_type: "detail"
+    expected_indicators: ["gdp", "unemployment_rate"]
+    expected_tables: ["economic_indicator_data", "employment_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, e.gdp, emp.unemployment_rate\nFROM economic_indicator_data e\nJOIN employment_data emp ON e.区划ID = emp.区划ID AND e.统计年份 = emp.统计年份\nJOIN admin_region_data a ON e.区划ID = a.区划ID\nWHERE e.统计年份 = '2023'\nORDER BY e.gdp DESC\nLIMIT 3"
+    expected_ranges:
+      gdp: {min: 0}
+      unemployment_rate: {min: 0}
+      table_rows: {min: 1, max: 6}
+    expected_keywords: ["GDP最高", "GDP最低", "失业率", "经济最强", "经济最弱"]
+
+  # --- 时间序列与趋势分析（3 题）---
+  - id: "L1-04"
+    level: 1
+    question: "从2020年到2023年，全国每年的经济总量（GDP）是怎么变化的？是逐年增长还是有所波动？"
+    expected_analysis_type: "trend"
+    expected_indicators: ["gdp"]
+    expected_tables: ["economic_indicator_data"]
+    expected_sql: "SELECT 统计年份, SUM(gdp) as total_gdp\nFROM economic_indicator_data\nWHERE 统计年份 BETWEEN '2020' AND '2023'\nGROUP BY 统计年份\nORDER BY 统计年份"
+    expected_ranges:
+      total_gdp: {min: 0}
+      table_rows: {min: 4, max: 4}
+    expected_keywords: ["逐年", "增长", "GDP变化", "2020", "2023"]
+
+  - id: "L1-05"
+    level: 1
+    question: "2023年，全国各季度的人口自然增长率分别是多少？哪个季度增长最快？"
+    expected_analysis_type: "detail"
+    expected_indicators: ["population_growth_rate"]
+    expected_tables: ["population_data"]
+    expected_sql: "SELECT quarter, AVG(population_growth_rate) as avg_growth_rate\nFROM population_data\nWHERE 统计年份 = '2023'\nGROUP BY quarter\nORDER BY quarter"
+    expected_ranges:
+      avg_growth_rate: {min: -10, max: 50}
+      table_rows: {min: 1, max: 4}
+    expected_keywords: ["季度", "人口自然增长率", "增长最快", "2023年"]
+
+  - id: "L1-06"
+    level: 1
+    question: "近几年全国的房价走势如何？帮我看看2020年到2023年每年的平均房价变化情况。"
+    expected_analysis_type: "trend"
+    expected_indicators: ["avg_house_price"]
+    expected_tables: ["real_estate_data"]
+    expected_sql: "SELECT 统计年份, AVG(avg_house_price) as avg_price\nFROM real_estate_data\nWHERE 统计年份 BETWEEN '2020' AND '2023'\nGROUP BY 统计年份\nORDER BY 统计年份"
+    expected_ranges:
+      avg_price: {min: 0}
+      table_rows: {min: 4, max: 4}
+    expected_keywords: ["房价走势", "平均房价", "2020", "2023", "变化"]
+
+  # --- 排名与比较（3 题）---
+  - id: "L1-07"
+    level: 1
+    question: "2023年，哪些省份的经济实力最强？按GDP从高到低帮我排个名，列出前10名。"
+    expected_analysis_type: "rank"
+    expected_indicators: ["gdp"]
+    expected_tables: ["economic_indicator_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, e.gdp\nFROM economic_indicator_data e\nJOIN admin_region_data a ON e.区划ID = a.区划ID\nWHERE e.统计年份 = '2023'\nORDER BY e.gdp DESC\nLIMIT 10"
+    expected_ranges:
+      gdp: {min: 0}
+      table_rows: {min: 1, max: 10}
+    expected_keywords: ["GDP排名", "前10", "经济实力", "2023年", "从高到低"]
+
+  - id: "L1-08"
+    level: 1
+    question: "2022年，哪些省份的人均GDP最高？哪些最低？分别列出前5名和后5名。"
+    expected_analysis_type: "rank"
+    expected_indicators: ["per_capita_gdp"]
+    expected_tables: ["economic_indicator_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, e.per_capita_gdp\nFROM economic_indicator_data e\nJOIN admin_region_data a ON e.区划ID = a.区划ID\nWHERE e.统计年份 = '2022'\nORDER BY e.per_capita_gdp DESC\nLIMIT 5"
+    expected_ranges:
+      per_capita_gdp: {min: 0}
+      table_rows: {min: 1, max: 10}
+    expected_keywords: ["人均GDP", "前5", "后5", "最高", "最低", "2022年"]
+
+  - id: "L1-09"
+    level: 1
+    question: "2023年，哪些省份的居民收入水平最高？按平均工资排序，帮我列出前3名和后3名。"
+    expected_analysis_type: "rank"
+    expected_indicators: ["avg_wage"]
+    expected_tables: ["employment_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, e.avg_wage\nFROM employment_data e\nJOIN admin_region_data a ON e.区划ID = a.区划ID\nWHERE e.统计年份 = '2023'\nORDER BY e.avg_wage DESC\nLIMIT 3"
+    expected_ranges:
+      avg_wage: {min: 0}
+      table_rows: {min: 1, max: 6}
+    expected_keywords: ["平均工资", "前3", "后3", "收入水平", "2023年"]
+
+  # --- 多维度深度分析（3 题）---
+  - id: "L1-10"
+    level: 1
+    question: "2023年，全国的第一产业（农业）、第二产业（工业）、第三产业（服务业）分别创造了多少价值？"
+    expected_analysis_type: "multi_dim"
+    expected_indicators: ["primary_industry", "secondary_industry", "tertiary_industry"]
+    expected_tables: ["economic_indicator_data"]
+    expected_sql: "SELECT SUM(primary_industry) as total_primary, SUM(secondary_industry) as total_secondary, SUM(tertiary_industry) as total_tertiary\nFROM economic_indicator_data\nWHERE 统计年份 = '2023'"
+    expected_ranges:
+      total_primary: {min: 0}
+      total_secondary: {min: 0}
+      total_tertiary: {min: 0}
+      table_rows: {min: 1, max: 3}
+    expected_keywords: ["第一产业", "第二产业", "第三产业", "农业", "工业", "服务业", "2023年"]
+
+  - id: "L1-11"
+    level: 1
+    question: "2023年，每个省份的医疗资源怎么样？帮我统计一下各省的医院数量和诊所数量。"
+    expected_analysis_type: "detail"
+    expected_indicators: ["hospitals", "clinics"]
+    expected_tables: ["medical_health_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, m.hospitals, m.clinics\nFROM medical_health_data m\nJOIN admin_region_data a ON m.区划ID = a.区划ID\nWHERE m.统计年份 = '2023'\nORDER BY a.province_name"
+    expected_ranges:
+      hospitals: {min: 0}
+      clinics: {min: 0}
+    expected_keywords: ["医疗资源", "医院数量", "诊所数量", "2023年", "各省"]
+
+  - id: "L1-12"
+    level: 1
+    question: "2023年，各省的城镇人口和农村人口分别是多少？哪些省份的城镇化程度比较高？"
+    expected_analysis_type: "detail"
+    expected_indicators: ["urban_population", "rural_population"]
+    expected_tables: ["population_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, p.urban_population, p.rural_population\nFROM population_data p\nJOIN admin_region_data a ON p.区划ID = a.区划ID\nWHERE p.统计年份 = '2023'\nORDER BY p.urban_population DESC"
+    expected_ranges:
+      urban_population: {min: 0}
+      rural_population: {min: 0}
+    expected_keywords: ["城镇人口", "农村人口", "城镇化", "2023年", "各省"]
+
+  # --- 政策评估与关联分析（3 题）---
+  - id: "L1-13"
+    level: 1
+    question: "这几年国家对教育的投入是增加了还是减少了？帮我看看2020年到2023年全国教育支出的变化趋势。"
+    expected_analysis_type: "trend"
+    expected_indicators: ["education_expenditure"]
+    expected_tables: ["edu_data"]
+    expected_sql: "SELECT 统计年份, SUM(education_expenditure) as total_expenditure\nFROM edu_data\nWHERE 统计年份 BETWEEN '2020' AND '2023'\nGROUP BY 统计年份\nORDER BY 统计年份"
+    expected_ranges:
+      total_expenditure: {min: 0}
+      table_rows: {min: 4, max: 4}
+    expected_keywords: ["教育支出", "变化趋势", "2020", "2023", "增加了"]
+
+  - id: "L1-14"
+    level: 1
+    question: "一个省的医疗卫生支出多，是不是意味着医疗资源就更丰富？帮我列出2023年各省的医疗卫生支出和医院数量，看看两者是否匹配。"
+    expected_analysis_type: "detail"
+    expected_indicators: ["medical_expenditure", "hospitals"]
+    expected_tables: ["medical_health_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, m.medical_expenditure, m.hospitals\nFROM medical_health_data m\nJOIN admin_region_data a ON m.区划ID = a.区划ID\nWHERE m.统计年份 = '2023'\nORDER BY m.medical_expenditure DESC"
+    expected_ranges:
+      medical_expenditure: {min: 0}
+      hospitals: {min: 0}
+    expected_keywords: ["医疗卫生支出", "医院数量", "匹配", "2023年"]
+
+  - id: "L1-15"
+    level: 1
+    question: "2023年全国的固定资产投资总额是多少？和2020年相比是增加了还是减少了？"
+    expected_analysis_type: "detail"
+    expected_indicators: ["fixed_asset_investment"]
+    expected_tables: ["economic_indicator_data"]
+    expected_sql: "SELECT 统计年份, SUM(fixed_asset_investment) as total_investment\nFROM economic_indicator_data\nWHERE 统计年份 IN ('2020', '2023')\nGROUP BY 统计年份\nORDER BY 统计年份"
+    expected_ranges:
+      total_investment: {min: 0}
+      table_rows: {min: 2, max: 2}
+    expected_keywords: ["固定资产投资", "2023年", "2020年", "增加", "减少", "对比"]
+
+  # --- 区域协同与空间分析（3 题）---
+  - id: "L1-16"
+    level: 1
+    question: "全国有哪些省级行政区？帮我列出所有省份（省级行政区）的名称和对应的行政代码。"
+    expected_analysis_type: "detail"
+    expected_indicators: ["province_name"]
+    expected_tables: ["admin_region_data"]
+    expected_sql: "SELECT province_name, 区划ID as admin_code\nFROM admin_region_data\nWHERE 区划级别 = '省级行政区'"
+    expected_ranges:
+      table_rows: {min: 20, max: 35}
+    expected_keywords: ["省级行政区", "省份", "行政代码", "列出"]
+
+  - id: "L1-17"
+    level: 1
+    question: "2023年，我国东部、中部、西部、东北这四大区域的经济总量分别是多少？哪个区域的经济贡献最大？"
+    expected_analysis_type: "spatial"
+    expected_indicators: ["gdp"]
+    expected_tables: ["economic_indicator_data", "admin_region_data"]
+    expected_sql: "SELECT a.region_group, SUM(e.gdp) as total_gdp\nFROM economic_indicator_data e\nJOIN admin_region_data a ON e.区划ID = a.区划ID\nWHERE e.统计年份 = '2023'\nGROUP BY a.region_group\nORDER BY total_gdp DESC"
+    expected_ranges:
+      total_gdp: {min: 0}
+      table_rows: {min: 4, max: 4}
+    expected_keywords: ["东部", "中部", "西部", "东北", "经济总量", "区域", "2023年"]
+
+  - id: "L1-18"
+    level: 1
+    question: "2022年，哪些省份的铁路建设最好？按铁路里程从高到低排序，列出前5名。"
+    expected_analysis_type: "rank"
+    expected_indicators: ["railway_mileage"]
+    expected_tables: ["transport_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, t.railway_mileage\nFROM transport_data t\nJOIN admin_region_data a ON t.区划ID = a.区划ID\nWHERE t.统计年份 = '2022'\nORDER BY t.railway_mileage DESC\nLIMIT 5"
+    expected_ranges:
+      railway_mileage: {min: 0}
+      table_rows: {min: 1, max: 5}
+    expected_keywords: ["铁路里程", "前5", "铁路建设", "2022年", "排序"]
+
+  # --- 异常检测与专项分析（2 题）---
+  - id: "L1-19"
+    level: 1
+    question: "2023年，哪些省份的空气质量最差？按全年AQI平均值从高到低排序，列出前3名。"
+    expected_analysis_type: "anomaly"
+    expected_indicators: ["aqi"]
+    expected_tables: ["env_monitor_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, AVG(e.aqi) as avg_aqi\nFROM env_monitor_data e\nJOIN admin_region_data a ON e.区划ID = a.区划ID\nWHERE e.统计年份 = '2023'\nGROUP BY a.province_name\nORDER BY avg_aqi DESC\nLIMIT 3"
+    expected_ranges:
+      avg_aqi: {min: 0}
+      table_rows: {min: 1, max: 3}
+    expected_keywords: ["空气质量", "AQI", "前3", "最差", "2023年"]
+
+  - id: "L1-20"
+    level: 1
+    question: "2023年，哪些省份的就业形势比较严峻？帮我找出失业率高于全国平均水平的省份。"
+    expected_analysis_type: "anomaly"
+    expected_indicators: ["unemployment_rate"]
+    expected_tables: ["employment_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, e.unemployment_rate\nFROM employment_data e\nJOIN admin_region_data a ON e.区划ID = a.区划ID\nWHERE e.统计年份 = '2023'\n  AND e.unemployment_rate > (SELECT AVG(unemployment_rate) FROM employment_data WHERE 统计年份 = '2023')"
+    expected_ranges:
+      unemployment_rate: {min: 0}
+    expected_keywords: ["失业率", "高于全国平均水平", "就业形势", "2023年"]
+
+  # ===========================================================================
+  # L2 — 进阶查询（20 题）
+  # ===========================================================================
+
+  # --- 跨领域综合分析（3 题）---
+  - id: "L2-01"
+    level: 2
+    question: "2023年，经济实力最强的那些省份，它们的医疗条件是不是也最好？帮我看看GDP前5的省份，它们的人均医疗资源（千人床位数、千人医生数）在全国大概排在什么位置，有没有哪个省份经济强但医疗弱？"
+    expected_analysis_type: "cross_domain"
+    expected_indicators: ["gdp", "hospital_beds", "doctors"]
+    expected_tables: ["economic_indicator_data", "medical_health_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, e.gdp, m.hospital_beds, m.doctors\nFROM economic_indicator_data e\nJOIN medical_health_data m ON e.区划ID = m.区划ID AND e.统计年份 = m.统计年份\nJOIN admin_region_data a ON e.区划ID = a.区划ID\nWHERE e.统计年份 = '2023'\nORDER BY e.gdp DESC\nLIMIT 5"
+    expected_ranges:
+      gdp: {min: 0}
+      hospital_beds: {min: 0}
+    expected_keywords: ["GDP前5", "医疗资源", "千人床位数", "医生数", "排名"]
+
+  - id: "L2-02"
+    level: 2
+    question: "一个省的投资越多，房地产是不是也越热？帮我看看2022年各省的固定资产投资和房地产投资，这两个指标的走势是同步的还是分化的，哪些省份投资热度最高？"
+    expected_analysis_type: "detail"
+    expected_indicators: ["fixed_asset_investment", "real_estate_investment"]
+    expected_tables: ["economic_indicator_data", "real_estate_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, e.fixed_asset_investment, r.real_estate_investment\nFROM economic_indicator_data e\nJOIN real_estate_data r ON e.区划ID = r.区划ID AND e.统计年份 = r.统计年份\nJOIN admin_region_data a ON e.区划ID = a.区划ID\nWHERE e.统计年份 = '2022'\nORDER BY e.fixed_asset_investment DESC"
+    expected_ranges:
+      fixed_asset_investment: {min: 0}
+      real_estate_investment: {min: 0}
+    expected_keywords: ["固定资产投资", "房地产投资", "2022年", "同步", "分化"]
+
+  - id: "L2-03"
+    level: 2
+    question: "城市化程度高的省份，房价是不是也更贵？帮我按城镇化率（城镇人口占比）把各省分成高、中、低三组，看看每组的平均房价分别是多少。"
+    expected_analysis_type: "cross_domain"
+    expected_indicators: ["urban_population", "rural_population", "avg_house_price"]
+    expected_tables: ["population_data", "real_estate_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, p.urban_population, p.rural_population, r.avg_house_price\nFROM population_data p\nJOIN real_estate_data r ON p.区划ID = r.区划ID AND p.统计年份 = r.统计年份\nJOIN admin_region_data a ON p.区划ID = a.区划ID\nWHERE p.统计年份 = '2023'"
+    expected_ranges:
+      avg_house_price: {min: 0}
+      urban_population: {min: 0}
+    expected_keywords: ["城镇化率", "房价", "高", "中", "低", "分组", "平均房价"]
+
+  # --- 时间序列与趋势分析（3 题）---
+  - id: "L2-04"
+    level: 2
+    question: "2023年全国的经济总量比2022年增长了多少？增长的百分比是多少？"
+    expected_analysis_type: "trend"
+    expected_indicators: ["gdp"]
+    expected_tables: ["economic_indicator_data"]
+    expected_sql: "SELECT 统计年份, SUM(gdp) as total_gdp\nFROM economic_indicator_data\nWHERE 统计年份 IN ('2022', '2023')\nGROUP BY 统计年份\nORDER BY 统计年份"
+    expected_ranges:
+      total_gdp: {min: 0}
+      table_rows: {min: 2, max: 2}
+    expected_keywords: ["2023", "2022", "增长", "百分比", "同比", "GDP"]
+
+  - id: "L2-05"
+    level: 2
+    question: "2023年各季度全国商品房的平均售价是涨还是跌？每个季度相比上一个季度变化了多少？"
+    expected_analysis_type: "trend"
+    expected_indicators: ["avg_house_price"]
+    expected_tables: ["real_estate_data"]
+    expected_sql: "SELECT quarter, AVG(avg_house_price) as avg_price\nFROM real_estate_data\nWHERE 统计年份 = '2023'\nGROUP BY quarter\nORDER BY quarter"
+    expected_ranges:
+      avg_price: {min: 0}
+      table_rows: {min: 4, max: 4}
+    expected_keywords: ["季度", "平均售价", "涨", "跌", "环比", "2023年"]
+
+  - id: "L2-06"
+    level: 2
+    question: "2020年到2023年，国家对教育和医疗的投入都在增加，哪个增长更快？帮我比较一下教育支出和医疗卫生支出每年的增长率，看看两者的增速是同步还是分化。"
+    expected_analysis_type: "trend"
+    expected_indicators: ["education_expenditure", "medical_expenditure"]
+    expected_tables: ["edu_data", "medical_health_data"]
+    expected_sql: "SELECT e.统计年份, SUM(e.education_expenditure) as total_edu, SUM(m.medical_expenditure) as total_medical\nFROM edu_data e\nJOIN medical_health_data m ON e.统计年份 = m.统计年份\nWHERE e.统计年份 BETWEEN '2020' AND '2023'\nGROUP BY e.统计年份\nORDER BY e.统计年份"
+    expected_ranges:
+      total_edu: {min: 0}
+      total_medical: {min: 0}
+      table_rows: {min: 4, max: 4}
+    expected_keywords: ["教育支出", "医疗卫生支出", "增长率", "同步", "分化", "对比"]
+
+  # --- 排名与比较（3 题）---
+  - id: "L2-07"
+    level: 2
+    question: "2023年，经济排名靠前的省份和靠后的省份，它们的失业率差距大吗？按GDP排名将各省分为前10名和后10名两组，比较两组的平均失业率。"
+    expected_analysis_type: "rank"
+    expected_indicators: ["gdp", "unemployment_rate"]
+    expected_tables: ["economic_indicator_data", "employment_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, e.gdp, emp.unemployment_rate\nFROM economic_indicator_data e\nJOIN employment_data emp ON e.区划ID = emp.区划ID AND e.统计年份 = emp.统计年份\nJOIN admin_region_data a ON e.区划ID = a.区划ID\nWHERE e.统计年份 = '2023'\nORDER BY e.gdp DESC"
+    expected_ranges:
+      gdp: {min: 0}
+      unemployment_rate: {min: 0}
+    expected_keywords: ["GDP排名", "前10", "后10", "失业率", "差距"]
+
+  - id: "L2-08"
+    level: 2
+    question: "2023年，在经济总量最大的5个省份中，哪个省份的产业结构最先进（服务业占比最高）？按第三产业占GDP的比重给这5个省排个序。"
+    expected_analysis_type: "rank"
+    expected_indicators: ["gdp", "tertiary_industry"]
+    expected_tables: ["economic_indicator_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, e.gdp, e.tertiary_industry, (e.tertiary_industry / NULLIF(e.gdp, 0)) as service_ratio\nFROM economic_indicator_data e\nJOIN admin_region_data a ON e.区划ID = a.区划ID\nWHERE e.统计年份 = '2023'\nORDER BY e.gdp DESC\nLIMIT 5"
+    expected_ranges:
+      gdp: {min: 0}
+      service_ratio: {min: 0}
+      table_rows: {min: 1, max: 5}
+    expected_keywords: ["GDP最大", "服务业占比", "第三产业", "产业结构", "排名"]
+
+  - id: "L2-09"
+    level: 2
+    question: "2023年，哪些省份的买房压力最大（房价相对收入最高）？帮我算一下各省的平均房价和平均工资的比值，排个序看看前5名和后5名分别是谁。"
+    expected_analysis_type: "rank"
+    expected_indicators: ["avg_house_price", "avg_wage"]
+    expected_tables: ["real_estate_data", "employment_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, r.avg_house_price, e.avg_wage, (r.avg_house_price / NULLIF(e.avg_wage, 0)) as price_to_income\nFROM real_estate_data r\nJOIN employment_data e ON r.区划ID = e.区划ID AND r.统计年份 = e.统计年份\nJOIN admin_region_data a ON r.区划ID = a.区划ID\nWHERE r.统计年份 = '2023'\nORDER BY price_to_income DESC"
+    expected_ranges:
+      avg_house_price: {min: 0}
+      avg_wage: {min: 0}
+    expected_keywords: ["买房压力", "房价收入比", "前5", "后5", "平均工资", "平均房价"]
+
+  # --- 多维度深度分析（3 题）---
+  - id: "L2-10"
+    level: 2
+    question: "2023年，各省的产业结构差异大吗？农业、工业、服务业三个产业在各省的占比分别是什么情况？帮我找出服务业占比最高和最低的3个省份。"
+    expected_analysis_type: "multi_dim"
+    expected_indicators: ["primary_industry", "secondary_industry", "tertiary_industry"]
+    expected_tables: ["economic_indicator_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, e.primary_industry, e.secondary_industry, e.tertiary_industry\nFROM economic_indicator_data e\nJOIN admin_region_data a ON e.区划ID = a.区划ID\nWHERE e.统计年份 = '2023'\nORDER BY e.tertiary_industry DESC"
+    expected_ranges:
+      primary_industry: {min: 0}
+      secondary_industry: {min: 0}
+      tertiary_industry: {min: 0}
+    expected_keywords: ["产业结构", "农业", "工业", "服务业", "占比", "最高", "最低"]
+
+  - id: "L2-11"
+    level: 2
+    question: "2022年，按人均GDP把各省分成经济发达、中等、欠发达三组，这三组的教育水平和识字率有什么差异？发达省份的教育投入一定更高吗？"
+    expected_analysis_type: "multi_dim"
+    expected_indicators: ["per_capita_gdp", "education_expenditure", "literacy_rate"]
+    expected_tables: ["economic_indicator_data", "edu_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, e.per_capita_gdp, edu.education_expenditure, edu.literacy_rate\nFROM economic_indicator_data e\nJOIN edu_data edu ON e.区划ID = edu.区划ID AND e.统计年份 = edu.统计年份\nJOIN admin_region_data a ON e.区划ID = a.区划ID\nWHERE e.统计年份 = '2022'\nORDER BY e.per_capita_gdp DESC"
+    expected_ranges:
+      per_capita_gdp: {min: 0}
+      education_expenditure: {min: 0}
+      literacy_rate: {min: 0}
+    expected_keywords: ["人均GDP", "发达", "中等", "欠发达", "教育投入", "识字率"]
+
+  - id: "L2-12"
+    level: 2
+    question: "2023年，人口大省（人口超过5000万）的各项资源总量占全国的比例是多少？帮我算一下这些省份的大学生数、医院床位数、民用车辆数分别占全国的比重。"
+    expected_analysis_type: "multi_dim"
+    expected_indicators: ["total_population", "college_students", "hospital_beds", "civil_vehicles"]
+    expected_tables: ["population_data", "edu_data", "medical_health_data", "transport_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, p.total_population, edu.college_students, m.hospital_beds, t.civil_vehicles\nFROM population_data p\nJOIN admin_region_data a ON p.区划ID = a.区划ID\nLEFT JOIN edu_data edu ON p.区划ID = edu.区划ID AND p.统计年份 = edu.统计年份\nLEFT JOIN medical_health_data m ON p.区划ID = m.区划ID AND p.统计年份 = m.统计年份\nLEFT JOIN transport_data t ON p.区划ID = t.区划ID AND p.统计年份 = t.统计年份\nWHERE p.统计年份 = '2023' AND p.total_population > 50000000"
+    expected_ranges:
+      total_population: {min: 50000000}
+      college_students: {min: 0}
+      hospital_beds: {min: 0}
+    expected_keywords: ["人口大省", "5000万", "占比", "大学生", "床位", "民用车辆"]
+
+  # --- 政策评估与关联分析（3 题）---
+  - id: "L2-13"
+    level: 2
+    question: "投资是拉动经济增长的重要动力。2020年到2023年，每年的固定资产投资增长率和GDP增长率之间有没有同步关系？投资加速时经济也加速这个说法成立吗？"
+    expected_analysis_type: "correlation"
+    expected_indicators: ["fixed_asset_investment", "gdp"]
+    expected_tables: ["economic_indicator_data"]
+    expected_sql: "SELECT 统计年份, SUM(fixed_asset_investment) as total_investment, SUM(gdp) as total_gdp\nFROM economic_indicator_data\nWHERE 统计年份 BETWEEN '2020' AND '2023'\nGROUP BY 统计年份\nORDER BY 统计年份"
+    expected_ranges:
+      total_investment: {min: 0}
+      total_gdp: {min: 0}
+      table_rows: {min: 4, max: 4}
+    expected_keywords: ["固定资产投资", "GDP", "增长率", "同步", "投资加速", "2020", "2023"]
+
+  - id: "L2-14"
+    level: 2
+    question: "教育投入多的省份，就业情况是不是更好？2023年，教育支出最高的5个省份和最低的5个省份，它们的就业人口和失业率有什么差异？"
+    expected_analysis_type: "cross_domain"
+    expected_indicators: ["education_expenditure", "employment_population", "unemployment_rate"]
+    expected_tables: ["edu_data", "employment_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, edu.education_expenditure, emp.employment_population, emp.unemployment_rate\nFROM edu_data edu\nJOIN employment_data emp ON edu.区划ID = emp.区划ID AND edu.统计年份 = emp.统计年份\nJOIN admin_region_data a ON edu.区划ID = a.区划ID\nWHERE edu.统计年份 = '2023'\nORDER BY edu.education_expenditure DESC"
+    expected_ranges:
+      education_expenditure: {min: 0}
+      employment_population: {min: 0}
+      unemployment_rate: {min: 0}
+    expected_keywords: ["教育支出", "最高", "最低", "就业人口", "失业率", "差异"]
+
+  - id: "L2-15"
+    level: 2
+    question: "产业结构比较清洁（服务业占比高）的省份，是不是环境治理也做得更好？2022年，按第三产业占比把各省分成高、低两组，比较两组平均的污水处理率。"
+    expected_analysis_type: "correlation"
+    expected_indicators: ["tertiary_industry", "waste_treatment_rate"]
+    expected_tables: ["economic_indicator_data", "env_monitor_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, e.tertiary_industry, env.waste_treatment_rate\nFROM economic_indicator_data e\nJOIN env_monitor_data env ON e.区划ID = env.区划ID AND e.统计年份 = env.统计年份\nJOIN admin_region_data a ON e.区划ID = a.区划ID\nWHERE e.统计年份 = '2022'\nORDER BY e.tertiary_industry DESC"
+    expected_ranges:
+      tertiary_industry: {min: 0}
+      waste_treatment_rate: {min: 0, max: 100}
+    expected_keywords: ["第三产业", "占比", "污水处理率", "高", "低", "环境治理"]
+
+  # --- 区域协同与空间分析（3 题）---
+  - id: "L2-16"
+    level: 2
+    question: "经济发达的省份，在医疗、教育、环境等方面是不是全面领先？按GDP水平把各省分为发达和发展中两组，比较两组在千人床位数、识字率、森林覆盖率上的平均差异。"
+    expected_analysis_type: "spatial"
+    expected_indicators: ["gdp", "hospital_beds", "literacy_rate", "forest_coverage"]
+    expected_tables: ["economic_indicator_data", "medical_health_data", "edu_data", "env_monitor_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, e.gdp, m.hospital_beds, edu.literacy_rate, env.forest_coverage\nFROM economic_indicator_data e\nJOIN admin_region_data a ON e.区划ID = a.区划ID\nLEFT JOIN medical_health_data m ON e.区划ID = m.区划ID AND e.统计年份 = m.统计年份\nLEFT JOIN edu_data edu ON e.区划ID = edu.区划ID AND e.统计年份 = edu.统计年份\nLEFT JOIN env_monitor_data env ON e.区划ID = env.区划ID AND e.统计年份 = env.统计年份\nWHERE e.统计年份 = '2022'\nORDER BY e.gdp DESC"
+    expected_ranges:
+      gdp: {min: 0}
+      hospital_beds: {min: 0}
+      literacy_rate: {min: 0}
+      forest_coverage: {min: 0}
+    expected_keywords: ["经济发达", "发展中", "千人床位数", "识字率", "森林覆盖率", "差异"]
+
+  - id: "L2-17"
+    level: 2
+    question: "2023年，我国几大经济区域（东部、中部、西部、东北）内部的发展差距大吗？在每个区域内，GDP最高和最低的省份相差多少倍？"
+    expected_analysis_type: "spatial"
+    expected_indicators: ["gdp"]
+    expected_tables: ["economic_indicator_data", "admin_region_data"]
+    expected_sql: "SELECT a.region_group, a.province_name, e.gdp\nFROM economic_indicator_data e\nJOIN admin_region_data a ON e.区划ID = a.区划ID\nWHERE e.统计年份 = '2023'\nORDER BY a.region_group, e.gdp DESC"
+    expected_ranges:
+      gdp: {min: 0}
+    expected_keywords: ["东部", "中部", "西部", "东北", "区域差距", "GDP", "倍数", "2023年"]
+
+  - id: "L2-18"
+    level: 2
+    question: "城市化越高的省份，空气质量是不是越差？2023年，按城镇化率排序，比较前5名和后5名省份的平均空气质量指数（AQI），看看有没有关系。"
+    expected_analysis_type: "spatial"
+    expected_indicators: ["urban_population", "aqi"]
+    expected_tables: ["population_data", "env_monitor_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, p.urban_population, p.total_population, env.aqi\nFROM population_data p\nJOIN env_monitor_data env ON p.区划ID = env.区划ID AND p.统计年份 = env.统计年份\nJOIN admin_region_data a ON p.区划ID = a.区划ID\nWHERE p.统计年份 = '2023'\nORDER BY (p.urban_population / NULLIF(p.total_population, 0)) DESC"
+    expected_ranges:
+      aqi: {min: 0}
+    expected_keywords: ["城镇化率", "AQI", "前5", "后5", "空气质量", "排序"]
+
+  # --- 异常检测与专项分析（2 题）---
+  - id: "L2-19"
+    level: 2
+    question: "2020年到2023年间，有没有哪些省份出现过经济负增长（GDP比上一年下降）？如果有，是哪些省份、发生在哪一年、下降了多少？"
+    expected_analysis_type: "anomaly"
+    expected_indicators: ["gdp"]
+    expected_tables: ["economic_indicator_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, e1.统计年份, e1.gdp, e0.gdp as prev_gdp, (e1.gdp - e0.gdp) as decline\nFROM economic_indicator_data e1\nJOIN economic_indicator_data e0 ON e1.区划ID = e0.区划ID AND CAST(e1.统计年份 AS INTEGER) = CAST(e0.统计年份 AS INTEGER) + 1\nJOIN admin_region_data a ON e1.区划ID = a.区划ID\nWHERE e1.gdp < e0.gdp AND e1.统计年份 BETWEEN '2020' AND '2023'"
+    expected_ranges:
+      gdp: {min: 0}
+      decline: {max: 0}
+    expected_keywords: ["负增长", "GDP下降", "省份", "年份", "下降了多少"]
+
+  - id: "L2-20"
+    level: 2
+    question: "2023年，各省的平均房价水平差异很大吗？有没有哪些省份的房价明显偏离正常范围（和全国平均水平相比差距特别大）？"
+    expected_analysis_type: "anomaly"
+    expected_indicators: ["avg_house_price"]
+    expected_tables: ["real_estate_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, r.avg_house_price\nFROM real_estate_data r\nJOIN admin_region_data a ON r.区划ID = a.区划ID\nWHERE r.统计年份 = '2023'\nORDER BY r.avg_house_price DESC"
+    expected_ranges:
+      avg_house_price: {min: 0}
+    expected_keywords: ["房价", "偏离", "全国平均水平", "Z-score", "异常", "2023年"]
+
+  # ===========================================================================
+  # L3 — 中级分析（20 题）
+  # ===========================================================================
+
+  # --- 跨领域综合分析（3 题）---
+  - id: "L3-01"
+    level: 3
+    question: "我想综合评价一下2023年各省的全面发展水平，不光看经济，还要看民生、教育、环境和就业。请从GDP增长率、平均工资、森林覆盖率、识字率这几个维度综合打分，看看哪些省份发展最均衡、最全面？"
+    expected_analysis_type: "cross_domain"
+    expected_indicators: ["gdp_growth_rate", "avg_wage", "forest_coverage", "literacy_rate"]
+    expected_tables: ["economic_indicator_data", "employment_data", "env_monitor_data", "edu_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, e2.gdp_growth_rate, emp.avg_wage, env.forest_coverage, edu.literacy_rate\nFROM economic_indicator_data e2\nJOIN employment_data emp ON e2.区划ID = emp.区划ID AND e2.统计年份 = emp.统计年份\nJOIN env_monitor_data env ON e2.区划ID = env.区划ID AND e2.统计年份 = env.统计年份\nJOIN edu_data edu ON e2.区划ID = edu.区划ID AND e2.统计年份 = edu.统计年份\nJOIN admin_region_data a ON e2.区划ID = a.区划ID\nWHERE e2.统计年份 = '2023'"
+    expected_ranges:
+      gdp_growth_rate: {min: -10, max: 50}
+      avg_wage: {min: 0}
+      forest_coverage: {min: 0}
+      literacy_rate: {min: 0}
+    expected_keywords: ["综合评价", "全面发展", "GDP增长率", "平均工资", "森林覆盖率", "识字率", "均衡", "2023年"]
+
+  - id: "L3-02"
+    level: 3
+    question: "如果一个省投入了大量资金搞建设和教育医疗，这些投入最终转化成了经济产出。2022年，哪些省份的投入产出效率最高？投入端包括固定资产投资、房地产投资、教育支出和医疗支出，产出端看GDP。"
+    expected_analysis_type: "cross_domain"
+    expected_indicators: ["fixed_asset_investment", "real_estate_investment", "education_expenditure", "medical_expenditure", "gdp"]
+    expected_tables: ["economic_indicator_data", "real_estate_data", "edu_data", "medical_health_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, e.fixed_asset_investment, r.real_estate_investment, edu.education_expenditure, m.medical_expenditure, e.gdp\nFROM economic_indicator_data e\nLEFT JOIN real_estate_data r ON e.区划ID = r.区划ID AND e.统计年份 = r.统计年份\nLEFT JOIN edu_data edu ON e.区划ID = edu.区划ID AND e.统计年份 = edu.统计年份\nLEFT JOIN medical_health_data m ON e.区划ID = m.区划ID AND e.统计年份 = m.统计年份\nJOIN admin_region_data a ON e.区划ID = a.区划ID\nWHERE e.统计年份 = '2022'"
+    expected_ranges:
+      fixed_asset_investment: {min: 0}
+      gdp: {min: 0}
+    expected_keywords: ["投入产出", "效率", "固定资产投资", "教育支出", "医疗支出", "GDP", "2022年"]
+
+  - id: "L3-03"
+    level: 3
+    question: "2023年，各省的经济发展和环境污染之间是什么关系？经济越发达的省份污染越严重吗？请综合考虑各省的GDP、人口和固体废物处理量，按GDP高低分组对比污染物排放水平。"
+    expected_analysis_type: "cross_domain"
+    expected_indicators: ["gdp", "total_population", "industrial_waste"]
+    expected_tables: ["economic_indicator_data", "env_monitor_data", "population_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, e.gdp, p.total_population, env.industrial_waste\nFROM economic_indicator_data e\nJOIN env_monitor_data env ON e.区划ID = env.区划ID AND e.统计年份 = env.统计年份\nJOIN population_data p ON e.区划ID = p.区划ID AND e.统计年份 = p.统计年份\nJOIN admin_region_data a ON e.区划ID = a.区划ID\nWHERE e.统计年份 = '2023'"
+    expected_ranges:
+      gdp: {min: 0}
+      total_population: {min: 0}
+      industrial_waste: {min: 0}
+    expected_keywords: ["GDP", "环境污染", "分组", "固体废物", "排放", "2023年"]
+
+  # --- 时间序列与趋势分析（3 题）---
+  - id: "L3-04"
+    level: 3
+    question: "从2020年到2023年，全国经济总量平均每年增长了多少？我想知道这3年的平均增速，再看看哪一年的增长特别突出或特别低迷。"
+    expected_analysis_type: "trend"
+    expected_indicators: ["gdp"]
+    expected_tables: ["economic_indicator_data"]
+    expected_sql: "SELECT 统计年份, SUM(gdp) as total_gdp\nFROM economic_indicator_data\nWHERE 统计年份 BETWEEN '2020' AND '2023'\nGROUP BY 统计年份\nORDER BY 统计年份"
+    expected_ranges:
+      total_gdp: {min: 0}
+      table_rows: {min: 4, max: 4}
+    expected_keywords: ["CAGR", "平均增速", "增长", "突出", "低迷", "2020", "2023"]
+
+  - id: "L3-05"
+    level: 3
+    question: "2023年，全国商品房的销售情况怎么样？我想看每个月的销售面积，但月数据波动太大，能不能做一个平滑的趋势线，帮我找出趋势什么时候发生了方向变化？"
+    expected_analysis_type: "trend"
+    expected_indicators: ["sales_area"]
+    expected_tables: ["real_estate_data"]
+    expected_sql: "SELECT 统计年份, quarter, sales_area\nFROM real_estate_data\nWHERE 统计年份 = '2023'\nORDER BY quarter"
+    expected_ranges:
+      sales_area: {min: 0}
+    expected_keywords: ["销售面积", "平滑", "移动平均", "SMA", "趋势", "拐点", "2023年"]
+
+  - id: "L3-06"
+    level: 3
+    question: "2020年到2023年，全国失业率有没有季节性规律？每年哪个季度失业率最高？哪个季度最低？把4年的数据按季度汇总看看。"
+    expected_analysis_type: "trend"
+    expected_indicators: ["unemployment_rate"]
+    expected_tables: ["employment_data"]
+    expected_sql: "SELECT 统计年份, quarter, AVG(unemployment_rate) as avg_unemployment\nFROM employment_data\nWHERE 统计年份 BETWEEN '2020' AND '2023'\nGROUP BY 统计年份, quarter\nORDER BY 统计年份, quarter"
+    expected_ranges:
+      avg_unemployment: {min: 0}
+    expected_keywords: ["失业率", "季度", "季节性", "最高", "最低", "2020", "2023"]
+
+  # --- 排名与比较（3 题）---
+  - id: "L3-07"
+    level: 3
+    question: "2023年，哪些省份增长势头最猛？我想综合看GDP增长率、就业增长率和财政收入增长率这三个增长指标，排个名看看前5名和后5名分别是谁。"
+    expected_analysis_type: "rank"
+    expected_indicators: ["gdp_growth_rate", "employment_population", "revenue"]
+    expected_tables: ["economic_indicator_data", "employment_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, e.gdp_growth_rate, emp.employment_population, e.secondary_industry as revenue\nFROM economic_indicator_data e\nJOIN employment_data emp ON e.区划ID = emp.区划ID AND e.统计年份 = emp.统计年份\nJOIN admin_region_data a ON e.区划ID = a.区划ID\nWHERE e.统计年份 = '2023'"
+    expected_ranges:
+      gdp_growth_rate: {min: -10, max: 50}
+    expected_keywords: ["增长势头", "GDP增长率", "就业增长", "财政收入", "前5", "后5", "2023年"]
+
+  - id: "L3-08"
+    level: 3
+    question: "一个省每万人拥有的企业数量（企业活跃度）和经济发达程度（人均GDP）之间有关系吗？2023年，把各省按企业活跃度和人均GDP分别排名，看看哪些省份的排名差异最大。"
+    expected_analysis_type: "rank"
+    expected_indicators: ["enterprise_count", "per_capita_gdp"]
+    expected_tables: ["enterprise_data", "population_data", "economic_indicator_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, ent.enterprise_count, p.total_population, e.per_capita_gdp\nFROM enterprise_data ent\nJOIN population_data p ON ent.区划ID = p.区划ID AND ent.统计年份 = p.统计年份\nJOIN economic_indicator_data e ON ent.区划ID = e.区划ID AND ent.统计年份 = e.统计年份\nJOIN admin_region_data a ON ent.区划ID = a.区划ID\nWHERE ent.统计年份 = '2023'"
+    expected_ranges:
+      enterprise_count: {min: 0}
+      per_capita_gdp: {min: 0}
+    expected_keywords: ["企业活跃度", "人均GDP", "排名差异", "排名差", "2023年"]
+
+  - id: "L3-09"
+    level: 3
+    question: "2023年，有没有哪些省份在经济发展、就业和环境三方面都优于全国平均水平？请以全国平均值为基准，找出GDP增长率高于均值、失业率低于均值、森林覆盖率高于均值的省份，以及三项都低于均值的省份。"
+    expected_analysis_type: "rank"
+    expected_indicators: ["gdp_growth_rate", "unemployment_rate", "forest_coverage"]
+    expected_tables: ["economic_indicator_data", "employment_data", "env_monitor_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, e.gdp_growth_rate, emp.unemployment_rate, env.forest_coverage\nFROM economic_indicator_data e\nJOIN employment_data emp ON e.区划ID = emp.区划ID AND e.统计年份 = emp.统计年份\nJOIN env_monitor_data env ON e.区划ID = env.区划ID AND e.统计年份 = env.统计年份\nJOIN admin_region_data a ON e.区划ID = a.区划ID\nWHERE e.统计年份 = '2023'"
+    expected_ranges:
+      gdp_growth_rate: {min: -10, max: 50}
+      unemployment_rate: {min: 0}
+      forest_coverage: {min: 0}
+    expected_keywords: ["全国平均", "基准", "高于均值", "低于均值", "GDP增长率", "失业率", "森林覆盖率", "2023年"]
+
+  # --- 多维度深度分析（3 题）---
+  - id: "L3-10"
+    level: 3
+    question: "2023年，把全国各省按东部、中部、西部、东北四大区域分组，每个区域内部各省的GDP差距有多大？哪个区域内部最均衡、哪个区域内部差距最大？"
+    expected_analysis_type: "multi_dim"
+    expected_indicators: ["gdp"]
+    expected_tables: ["economic_indicator_data", "admin_region_data"]
+    expected_sql: "SELECT a.region_group, a.province_name, e.gdp\nFROM economic_indicator_data e\nJOIN admin_region_data a ON e.区划ID = a.区划ID\nWHERE e.统计年份 = '2023'\nORDER BY a.region_group, e.gdp DESC"
+    expected_ranges:
+      gdp: {min: 0}
+    expected_keywords: ["东部", "中部", "西部", "东北", "区域", "GDP差距", "均衡", "2023年"]
+
+  - id: "L3-11"
+    level: 3
+    question: "2023年，各省的农业、工业、服务业三大产业是怎么分布的？我想看每个省份三类产业的增加值分别是多少，以及全国范围内三大产业各自的总占比。"
+    expected_analysis_type: "multi_dim"
+    expected_indicators: ["primary_industry", "secondary_industry", "tertiary_industry"]
+    expected_tables: ["economic_indicator_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, e.primary_industry, e.secondary_industry, e.tertiary_industry\nFROM economic_indicator_data e\nJOIN admin_region_data a ON e.区划ID = a.区划ID\nWHERE e.统计年份 = '2023'\nORDER BY a.province_name"
+    expected_ranges:
+      primary_industry: {min: 0}
+      secondary_industry: {min: 0}
+      tertiary_industry: {min: 0}
+    expected_keywords: ["农业", "工业", "服务业", "产业分布", "增加值", "占比", "2023年"]
+
+  - id: "L3-12"
+    level: 3
+    question: "医疗领域的投入和产出在不同经济发展水平的省份之间差异大吗？2022年，按人均GDP把各省分成四组，比较每组医疗卫生支出和千人床位数之间的投入产出比。"
+    expected_analysis_type: "multi_dim"
+    expected_indicators: ["per_capita_gdp", "medical_expenditure", "hospital_beds"]
+    expected_tables: ["medical_health_data", "economic_indicator_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, e.per_capita_gdp, m.medical_expenditure, m.hospital_beds\nFROM medical_health_data m\nJOIN economic_indicator_data e ON m.区划ID = e.区划ID AND m.统计年份 = e.统计年份\nJOIN admin_region_data a ON m.区划ID = a.区划ID\nWHERE m.统计年份 = '2022'\nORDER BY e.per_capita_gdp DESC"
+    expected_ranges:
+      per_capita_gdp: {min: 0}
+      medical_expenditure: {min: 0}
+      hospital_beds: {min: 0}
+    expected_keywords: ["人均GDP", "四组", "NTILE", "医疗卫生支出", "千人床位数", "投入产出", "2022年"]
+
+  # --- 政策评估与关联分析（3 题）---
+  - id: "L3-13"
+    level: 3
+    question: "教育投入到底有没有效果？2020年到2023年，各省教育支出越多，识字率就越高吗？帮我算算两者之间的关联程度，再看看有没有花了钱但效果不明显的省份。"
+    expected_analysis_type: "correlation"
+    expected_indicators: ["education_expenditure", "literacy_rate"]
+    expected_tables: ["edu_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, e.education_expenditure, e.literacy_rate\nFROM edu_data e\nJOIN admin_region_data a ON e.区划ID = a.区划ID\nWHERE e.统计年份 BETWEEN '2020' AND '2023'\nORDER BY a.province_name, e.统计年份"
+    expected_ranges:
+      education_expenditure: {min: 0}
+      literacy_rate: {min: 0, max: 100}
+    expected_keywords: ["教育支出", "识字率", "Pearson", "相关系数", "关联", "效果不明显", "残差"]
+
+  - id: "L3-14"
+    level: 3
+    question: "都说投资拉动就业，这个说法在实践中成立吗？2023年，各省固定资产投资增长率和就业人口增长率之间有没有正向关系？增长率越高的省份，就业增长也越快吗？"
+    expected_analysis_type: "correlation"
+    expected_indicators: ["fixed_asset_investment", "employment_population"]
+    expected_tables: ["economic_indicator_data", "employment_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, e.fixed_asset_investment, emp.employment_population\nFROM economic_indicator_data e\nJOIN employment_data emp ON e.区划ID = emp.区划ID AND e.统计年份 = emp.统计年份\nJOIN admin_region_data a ON e.区划ID = a.区划ID\nWHERE e.统计年份 = '2023'\nORDER BY e.fixed_asset_investment DESC"
+    expected_ranges:
+      fixed_asset_investment: {min: 0}
+      employment_population: {min: 0}
+    expected_keywords: ["固定资产投资", "就业", "Pearson", "正向关系", "增长率", "2023年"]
+
+  - id: "L3-15"
+    level: 3
+    question: "老龄化程度越高的省份，医疗资源是不是越丰富？2023年，各省的老龄化率和千人床位数之间是什么关系？用不同的方法算一下，看看结果是线性的还是非线性的。"
+    expected_analysis_type: "correlation"
+    expected_indicators: ["aging_rate", "hospital_beds"]
+    expected_tables: ["medical_health_data", "population_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, p.aging_rate, m.hospital_beds\nFROM population_data p\nJOIN medical_health_data m ON p.区划ID = m.区划ID AND p.统计年份 = m.统计年份\nJOIN admin_region_data a ON p.区划ID = a.区划ID\nWHERE p.统计年份 = '2023'\nORDER BY p.aging_rate DESC"
+    expected_ranges:
+      aging_rate: {min: 0, max: 100}
+      hospital_beds: {min: 0}
+    expected_keywords: ["老龄化率", "千人床位数", "Pearson", "Spearman", "线性", "非线性", "2023年"]
+
+  # --- 区域协同与空间分析（3 题）---
+  - id: "L3-16"
+    level: 3
+    question: "2023年，按经济水平把各省分为高、中、低三组，这三组省份的公共服务水平差距大吗？请比较它们在人均医疗资源、人均教育资源和人均交通基础设施方面的均值差异。"
+    expected_analysis_type: "spatial"
+    expected_indicators: ["gdp", "medical_expenditure", "education_expenditure", "railway_mileage"]
+    expected_tables: ["economic_indicator_data", "medical_health_data", "edu_data", "transport_data", "population_data", "admin_region_data"]
+    expected_sql: "SELECT a.region_group, a.province_name, e.gdp, m.medical_expenditure, edu.education_expenditure, t.railway_mileage\nFROM economic_indicator_data e\nJOIN admin_region_data a ON e.区划ID = a.区划ID\nLEFT JOIN medical_health_data m ON e.区划ID = m.区划ID AND e.统计年份 = m.统计年份\nLEFT JOIN edu_data edu ON e.区划ID = edu.区划ID AND e.统计年份 = edu.统计年份\nLEFT JOIN transport_data t ON e.区划ID = t.区划ID AND e.统计年份 = t.统计年份\nWHERE e.统计年份 = '2023'"
+    expected_ranges:
+      gdp: {min: 0}
+    expected_keywords: ["高", "中", "低", "三组", "NTILE", "公共服务", "医疗", "教育", "交通", "差距", "2023年"]
+
+  - id: "L3-17"
+    level: 3
+    question: "2023年，我怀疑某些省份的经济水平远高于周边邻居，也有些省份远低于邻居。能不能帮我算算每个省和同一区域内其他省的GDP平均差距？找出那些鹤立鸡群（远高于区域均值）和洼地（远低于区域均值）的省份。"
+    expected_analysis_type: "spatial"
+    expected_indicators: ["gdp"]
+    expected_tables: ["economic_indicator_data", "admin_region_data"]
+    expected_sql: "SELECT a.region_group, a.province_name, e.gdp\nFROM economic_indicator_data e\nJOIN admin_region_data a ON e.区划ID = a.区划ID\nWHERE e.统计年份 = '2023'\nORDER BY a.region_group, e.gdp DESC"
+    expected_ranges:
+      gdp: {min: 0}
+    expected_keywords: ["区域", "GDP差距", "鹤立鸡群", "洼地", "区域均值", "邻域效应", "2023年"]
+
+  - id: "L3-18"
+    level: 3
+    question: "城市化程度高的省份，是不是服务业也更发达？2023年，城镇化率和第三产业占比之间有关系吗？城镇化升级是否能带动产业结构升级？"
+    expected_analysis_type: "spatial"
+    expected_indicators: ["urban_population", "tertiary_industry", "gdp"]
+    expected_tables: ["population_data", "economic_indicator_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, p.urban_population, p.total_population, e.tertiary_industry, e.gdp\nFROM population_data p\nJOIN economic_indicator_data e ON p.区划ID = e.区划ID AND p.统计年份 = e.统计年份\nJOIN admin_region_data a ON p.区划ID = a.区划ID\nWHERE p.统计年份 = '2023'\nORDER BY a.province_name"
+    expected_ranges:
+      urban_population: {min: 0}
+      tertiary_industry: {min: 0}
+    expected_keywords: ["城镇化率", "第三产业", "占比", "Spearman", "产业结构", "协同", "2023年"]
+
+  # --- 异常检测与专项分析（2 题）---
+  - id: "L3-19"
+    level: 3
+    question: "2020年到2023年，有没有哪些省份的失业率连续多年上升？我想找找那些就业形势持续恶化的省份，看看它们失业率累计上升了多少。"
+    expected_analysis_type: "anomaly"
+    expected_indicators: ["unemployment_rate"]
+    expected_tables: ["employment_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, e.统计年份, e.unemployment_rate\nFROM employment_data e\nJOIN admin_region_data a ON e.区划ID = a.区划ID\nWHERE e.统计年份 BETWEEN '2020' AND '2023'\nORDER BY a.province_name, e.统计年份"
+    expected_ranges:
+      unemployment_rate: {min: 0}
+    expected_keywords: ["失业率", "连续上升", "持续恶化", "累计", "2020", "2023", "同比"]
+
+  - id: "L3-20"
+    level: 3
+    question: "2023年，哪些省份的空气质量特别差或特别好——明显偏离了全国大多数省份的水平？用客观一点的方法帮我筛选一下。"
+    expected_analysis_type: "anomaly"
+    expected_indicators: ["aqi"]
+    expected_tables: ["env_monitor_data", "admin_region_data"]
+    expected_sql: "SELECT a.province_name, AVG(e.aqi) as avg_aqi\nFROM env_monitor_data e\nJOIN admin_region_data a ON e.区划ID = a.区划ID\nWHERE e.统计年份 = '2023'\nGROUP BY a.province_name"
+    expected_ranges:
+      avg_aqi: {min: 0}
+    expected_keywords: ["空气质量", "AQI", "IQR", "箱线", "偏离", "异常", "特别好", "特别差", "2023年"]

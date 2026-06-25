@@ -1,0 +1,458 @@
+# join_graph.yaml — 全局表关联图谱
+# 基于 pg_catalog 全量扫描自动生成
+tables:
+- name: admin_region_data
+  joins:
+  - target: economic_indicator_data
+    type: inner
+    'on':
+    - 区划ID
+    via: null
+  - target: population_data
+    type: inner
+    'on':
+    - 区划ID
+    via: null
+  - target: edu_data
+    type: inner
+    'on':
+    - 区划ID
+    via: null
+  - target: medical_health_data
+    type: inner
+    'on':
+    - 区划ID
+    via: null
+  - target: employment_data
+    type: inner
+    'on':
+    - 区划ID
+    via: null
+  - target: enterprise_data
+    type: inner
+    'on':
+    - 区划ID
+    via: null
+  - target: transport_data
+    type: inner
+    'on':
+    - 区划ID
+    via: null
+  - target: real_estate_data
+    type: inner
+    'on':
+    - 区划ID
+    via: null
+  - target: env_monitor_data
+    type: inner
+    'on':
+    - 区划ID
+    via: null
+- name: economic_indicator_data
+  joins:
+  - target: admin_region_data
+    type: inner
+    'on':
+    - 区划ID
+    via: null
+  - target: edu_data
+    type: inner
+    'on': &id001
+    - 区划ID
+    - 统计年份
+    via: null
+  - target: employment_data
+    type: inner
+    'on': &id002
+    - 区划ID
+    - 统计年份
+    via: null
+  - target: enterprise_data
+    type: inner
+    'on': &id004
+    - 区划ID
+    via: null
+  - target: env_monitor_data
+    type: inner
+    'on': &id007
+    - 区划ID
+    via: null
+  - target: medical_health_data
+    type: inner
+    'on': &id011
+    - 区划ID
+    - 统计年份
+    via: null
+  - target: population_data
+    type: inner
+    'on': &id016
+    - 区划ID
+    - 统计年份
+    via: null
+  - target: real_estate_data
+    type: inner
+    'on': &id022
+    - 区划ID
+    - 统计年份
+    via: null
+  - target: transport_data
+    type: inner
+    'on': &id029
+    - 区划ID
+    - 统计年份
+    via: null
+- name: edu_data
+  joins:
+  - target: admin_region_data
+    type: inner
+    'on':
+    - 区划ID
+    via: null
+  - target: economic_indicator_data
+    type: inner
+    'on': *id001
+    via: null
+  - target: employment_data
+    type: inner
+    'on': &id003
+    - 区划ID
+    - 统计年份
+    via: null
+  - target: enterprise_data
+    type: inner
+    'on': &id005
+    - 区划ID
+    via: null
+  - target: env_monitor_data
+    type: inner
+    'on': &id008
+    - 区划ID
+    via: null
+  - target: medical_health_data
+    type: inner
+    'on': &id012
+    - 区划ID
+    - 统计年份
+    via: null
+  - target: population_data
+    type: inner
+    'on': &id017
+    - 区划ID
+    - 统计年份
+    via: null
+  - target: real_estate_data
+    type: inner
+    'on': &id023
+    - 区划ID
+    - 统计年份
+    via: null
+  - target: transport_data
+    type: inner
+    'on': &id030
+    - 区划ID
+    - 统计年份
+    via: null
+- name: employment_data
+  joins:
+  - target: admin_region_data
+    type: inner
+    'on':
+    - 区划ID
+    via: null
+  - target: economic_indicator_data
+    type: inner
+    'on': *id002
+    via: null
+  - target: edu_data
+    type: inner
+    'on': *id003
+    via: null
+  - target: enterprise_data
+    type: inner
+    'on': &id006
+    - 区划ID
+    via: null
+  - target: env_monitor_data
+    type: inner
+    'on': &id009
+    - 区划ID
+    via: null
+  - target: medical_health_data
+    type: inner
+    'on': &id013
+    - 区划ID
+    - 统计年份
+    via: null
+  - target: population_data
+    type: inner
+    'on': &id018
+    - 区划ID
+    - 统计年份
+    via: null
+  - target: real_estate_data
+    type: inner
+    'on': &id024
+    - 区划ID
+    - 统计年份
+    via: null
+  - target: transport_data
+    type: inner
+    'on': &id031
+    - 区划ID
+    - 统计年份
+    via: null
+- name: enterprise_data
+  joins:
+  - target: admin_region_data
+    type: inner
+    'on':
+    - 区划ID
+    via: null
+  - target: economic_indicator_data
+    type: inner
+    'on': *id004
+    via: null
+  - target: edu_data
+    type: inner
+    'on': *id005
+    via: null
+  - target: employment_data
+    type: inner
+    'on': *id006
+    via: null
+  - target: env_monitor_data
+    type: inner
+    'on': &id010
+    - 区划ID
+    via: null
+  - target: medical_health_data
+    type: inner
+    'on': &id014
+    - 区划ID
+    via: null
+  - target: population_data
+    type: inner
+    'on': &id019
+    - 区划ID
+    via: null
+  - target: real_estate_data
+    type: inner
+    'on': &id025
+    - 区划ID
+    via: null
+  - target: transport_data
+    type: inner
+    'on': &id032
+    - 区划ID
+    via: null
+- name: env_monitor_data
+  joins:
+  - target: admin_region_data
+    type: inner
+    'on':
+    - 区划ID
+    via: null
+  - target: economic_indicator_data
+    type: inner
+    'on': *id007
+    via: null
+  - target: edu_data
+    type: inner
+    'on': *id008
+    via: null
+  - target: employment_data
+    type: inner
+    'on': *id009
+    via: null
+  - target: enterprise_data
+    type: inner
+    'on': *id010
+    via: null
+  - target: medical_health_data
+    type: inner
+    'on': &id015
+    - 区划ID
+    via: null
+  - target: population_data
+    type: inner
+    'on': &id020
+    - 区划ID
+    via: null
+  - target: real_estate_data
+    type: inner
+    'on': &id026
+    - 区划ID
+    via: null
+  - target: transport_data
+    type: inner
+    'on': &id033
+    - 区划ID
+    via: null
+- name: medical_health_data
+  joins:
+  - target: admin_region_data
+    type: inner
+    'on':
+    - 区划ID
+    via: null
+  - target: economic_indicator_data
+    type: inner
+    'on': *id011
+    via: null
+  - target: edu_data
+    type: inner
+    'on': *id012
+    via: null
+  - target: employment_data
+    type: inner
+    'on': *id013
+    via: null
+  - target: enterprise_data
+    type: inner
+    'on': *id014
+    via: null
+  - target: env_monitor_data
+    type: inner
+    'on': *id015
+    via: null
+  - target: population_data
+    type: inner
+    'on': &id021
+    - 区划ID
+    - 统计年份
+    via: null
+  - target: real_estate_data
+    type: inner
+    'on': &id027
+    - 区划ID
+    - 统计年份
+    via: null
+  - target: transport_data
+    type: inner
+    'on': &id034
+    - 区划ID
+    - 统计年份
+    via: null
+- name: population_data
+  joins:
+  - target: admin_region_data
+    type: inner
+    'on':
+    - 区划ID
+    via: null
+  - target: economic_indicator_data
+    type: inner
+    'on': *id016
+    via: null
+  - target: edu_data
+    type: inner
+    'on': *id017
+    via: null
+  - target: employment_data
+    type: inner
+    'on': *id018
+    via: null
+  - target: enterprise_data
+    type: inner
+    'on': *id019
+    via: null
+  - target: env_monitor_data
+    type: inner
+    'on': *id020
+    via: null
+  - target: medical_health_data
+    type: inner
+    'on': *id021
+    via: null
+  - target: real_estate_data
+    type: inner
+    'on': &id028
+    - 区划ID
+    - 统计年份
+    via: null
+  - target: transport_data
+    type: inner
+    'on': &id035
+    - 区划ID
+    - 统计年份
+    via: null
+- name: real_estate_data
+  joins:
+  - target: admin_region_data
+    type: inner
+    'on':
+    - 区划ID
+    via: null
+  - target: economic_indicator_data
+    type: inner
+    'on': *id022
+    via: null
+  - target: edu_data
+    type: inner
+    'on': *id023
+    via: null
+  - target: employment_data
+    type: inner
+    'on': *id024
+    via: null
+  - target: enterprise_data
+    type: inner
+    'on': *id025
+    via: null
+  - target: env_monitor_data
+    type: inner
+    'on': *id026
+    via: null
+  - target: medical_health_data
+    type: inner
+    'on': *id027
+    via: null
+  - target: population_data
+    type: inner
+    'on': *id028
+    via: null
+  - target: transport_data
+    type: inner
+    'on': &id036
+    - 区划ID
+    - 统计年份
+    via: null
+- name: transport_data
+  joins:
+  - target: admin_region_data
+    type: inner
+    'on':
+    - 区划ID
+    via: null
+  - target: economic_indicator_data
+    type: inner
+    'on': *id029
+    via: null
+  - target: edu_data
+    type: inner
+    'on': *id030
+    via: null
+  - target: employment_data
+    type: inner
+    'on': *id031
+    via: null
+  - target: enterprise_data
+    type: inner
+    'on': *id032
+    via: null
+  - target: env_monitor_data
+    type: inner
+    'on': *id033
+    via: null
+  - target: medical_health_data
+    type: inner
+    'on': *id034
+    via: null
+  - target: population_data
+    type: inner
+    'on': *id035
+    via: null
+  - target: real_estate_data
+    type: inner
+    'on': *id036
+    via: null

@@ -1,0 +1,532 @@
+questions:
+- id: L4-01
+  level: 4
+  question: 我想构建一个2023年各省的"综合发展指数"，综合考量经济（人均GDP、失业率反向）、教育（识字率）、医疗（千人床位数）、环境（森林覆盖率、PM2.5反向）这五个方面。不需要我人工定权重，让数据自己说话来分配各指标的权重，最终给各省排名。哪些省份综合发展水平最高？
+  expected_analysis_type: cross_domain
+  expected_indicators: []
+  expected_tables:
+  - economic_indicator_data
+  - employment_data
+  - edu_data
+  - medical_health_data
+  - env_monitor_data
+  - admin_region_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L4-02
+  level: 4
+  question: 2022年，各省投入了大量资金搞建设（固定资产投资）、办教育（教育支出）、建医疗（医疗卫生支出），但有些省份"投入产出效率"高（同样的投入换来了更高的GDP、识字率和医疗水平），有些省份效率低。请帮我评估一下每个省的资源配置效率，找出哪些省份是"高效标杆"。
+  expected_analysis_type: cross_domain
+  expected_indicators: []
+  expected_tables:
+  - economic_indicator_data
+  - edu_data
+  - medical_health_data
+  - admin_region_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L4-03
+  level: 4
+  question: 经济发展和民生保障之间应该是互相促进的——经济好才能改善民生，民生好又支撑经济发展。我想看看2023年各省的"经济-民生"系统是不是协调发展。用来衡量经济的指标有GDP、人均GDP、财政收入；衡量民生的指标有千人床位数、识字率、平均工资。哪些省份做到了"高水平的协调"（经济强民生也好）？哪些省份出现了"失调"（经济好但民生差，或反过来）？
+  expected_analysis_type: cross_domain
+  expected_indicators: []
+  expected_tables:
+  - economic_indicator_data
+  - medical_health_data
+  - edu_data
+  - employment_data
+  - admin_region_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L4-04
+  level: 4
+  question: 2020年到2023年，各省的经济增长轨迹是不一样的——有的省增长越来越快，有的省增速在放缓。我想用数据拟合一下每个省的增长趋势线，看看哪个省增长斜率最大（最有潜力），哪个省增长最乏力。
+  expected_analysis_type: trend
+  expected_indicators: []
+  expected_tables:
+  - economic_indicator_data
+  - admin_region_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L4-05
+  level: 4
+  question: 2023年每月的商品房销售面积数据波动很大，我想把它的"长期趋势"和"短期波动"分开来看——去掉趋势之后，看看哪些月份的销售情况明显异常（特别好或特别差），可能对应什么政策或市场事件。
+  expected_analysis_type: trend
+  expected_indicators: []
+  expected_tables:
+  - real_estate_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L4-06
+  level: 4
+  question: 教育投入的效果可能不是立竿见影的——今天投钱办教育，可能要好几年后才能看到经济上的回报。我想分析"教育支出"和"服务业（第三产业）发展"之间是否存在时间上的滞后关系。教育投入是提前1年、2年还是3年对经济结构产生影响？
+  expected_analysis_type: trend
+  expected_indicators: []
+  expected_tables:
+  - edu_data
+  - economic_indicator_data
+  - admin_region_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L4-07
+  level: 4
+  question: 2023年，我想以全国平均水平为"基准线"，看看每个省在人均GDP、识字率、千人床位数、森林覆盖率、失业率这5个指标上是高于还是低于基准。把每个指标与基准的差距综合起来算一个"偏离度得分"，看看哪些省份全面领先，哪些省份全面落后？
+  expected_analysis_type: rank
+  expected_indicators: []
+  expected_tables:
+  - economic_indicator_data
+  - edu_data
+  - medical_health_data
+  - env_monitor_data
+  - employment_data
+  - admin_region_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L4-08
+  level: 4
+  question: 经济大省是不是公共服务也一定好？2023年，从大学在校生数、医院床位数、民用车辆数三个维度综合看各省的"公共服务水平"，排名后和GDP排名对比。哪些省份的"公共服务排名"远高于其"经济排名"（公共服务好但经济排名一般）？哪些省份刚好相反？
+  expected_analysis_type: rank
+  expected_indicators: []
+  expected_tables:
+  - edu_data
+  - medical_health_data
+  - transport_data
+  - economic_indicator_data
+  - admin_region_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L4-09
+  level: 4
+  question: 把各省按GDP分成"发达组"和"发展中组"，我想看看两组内部的差异程度——发达省份之间，哪个指标的差异最大（比如房价差异远大于医疗资源差异）？发展中组又是什么情况？这能帮我们理解各组内部的"分化"程度。
+  expected_analysis_type: rank
+  expected_indicators: []
+  expected_tables:
+  - economic_indicator_data
+  - employment_data
+  - edu_data
+  - medical_health_data
+  - admin_region_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L4-10
+  level: 4
+  question: 2023年，我想从"区域（四大板块）× 产业（农业/工业/服务业）"两个维度来交叉分析GDP的分布。每个区域的产业结构是什么样？每个产业在各区域的贡献如何？哪个区域产业结构最均衡？
+  expected_analysis_type: multi_dim
+  expected_indicators: []
+  expected_tables:
+  - economic_indicator_data
+  - admin_region_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L4-11
+  level: 4
+  question: 2023年，各省的企业结构有什么不同？我想按"省份 × 企业类型（私营/国有/其他）"交叉统计企业数量、总营收和总纳税额。哪些省份的私营企业最活跃（营收占比最高）？
+  expected_analysis_type: multi_dim
+  expected_indicators: []
+  expected_tables:
+  - enterprise_data
+  - admin_region_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L4-12
+  level: 4
+  question: 固定资产投资是拉动经济的重要手段。我想算一个"投资弹性"——GDP每变动1%，固定资产投资会跟着变动百分之几？这个弹性的变化趋势如何？弹性是越来越高（经济越来越依赖投资）还是越来越低（经济转型成功）？
+  expected_analysis_type: multi_dim
+  expected_indicators: []
+  expected_tables:
+  - economic_indicator_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L4-13
+  level: 4
+  question: 影响经济增长的因素很多——投资、教育、医疗、城镇化。2020年到2023年各省的数据都摆在这，我想建一个模型，把这些因素都放进去，看看哪个因素对GDP增长的解释力最强？是投资更重要？教育更重要？还是城镇化更重要？
+  expected_analysis_type: correlation
+  expected_indicators: []
+  expected_tables:
+  - economic_indicator_data
+  - edu_data
+  - medical_health_data
+  - population_data
+  - admin_region_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L4-14
+  level: 4
+  question: 到底是"房地产投资拉动了经济增长"，还是"经济增长带动了房地产投资"？这是一个"先有鸡还是先有蛋"的问题。用2020年到2023年的季度数据帮我分析一下，两者的因果关系方向究竟是怎样的。
+  expected_analysis_type: correlation
+  expected_indicators: []
+  expected_tables:
+  - real_estate_data
+  - economic_indicator_data
+  - admin_region_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L4-15
+  level: 4
+  question: 增加医疗投入能不能真正降低死亡率？用2020年到2023年各省的数据，控制不同省份和年份的差异后，看看千人床位数、千人医生数、医疗卫生支出这三个因素中，哪个对降低死亡率效果最明显？公共卫生投入到底值不值？
+  expected_analysis_type: correlation
+  expected_indicators: []
+  expected_tables:
+  - medical_health_data
+  - population_data
+  - admin_region_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L4-16
+  level: 4
+  question: 修公路、铁路能不能拉动经济？2020年到2023年各省的数据证明：公路里程增长越快，GDP增长就越快吗？我想算算各省的"交通弹性"——公路里程每增长1%，GDP增长百分之几？哪些省份的交通建设对经济的拉动效果最明显？
+  expected_analysis_type: spatial
+  expected_indicators: []
+  expected_tables:
+  - transport_data
+  - economic_indicator_data
+  - admin_region_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L4-17
+  level: 4
+  question: 2023年，如果只用人均GDP和千人床位数这两个指标，能自动把全国各省分成几类吗？比如"高收入高医疗"、"高收入低医疗"、"低收入高医疗"、"低收入低医疗"各有哪些省份？哪一种类型的省份最多？
+  expected_analysis_type: spatial
+  expected_indicators: []
+  expected_tables:
+  - economic_indicator_data
+  - medical_health_data
+  - admin_region_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L4-18
+  level: 4
+  question: 2023年，东部、中部、西部、东北四大板块的"经济-环境"协调发展水平有差异吗？东部是不是比西部更协调？哪个板块内部的协调度差异最大（有的省做得好有的省做得差）？
+  expected_analysis_type: spatial
+  expected_indicators: []
+  expected_tables:
+  - economic_indicator_data
+  - env_monitor_data
+  - admin_region_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L4-19
+  level: 4
+  question: 2023年，有没有一些省份的经济增长率和失业率同时出现异常？比如某个省GDP增长异常高但失业率也异常高（增长没带来就业），或者GDP暴跌但失业率稳定（有特殊情况）。请用两种客观方法同时检测，只取两种方法都认为异常的省份，减少误报。
+  expected_analysis_type: anomaly
+  expected_indicators: []
+  expected_tables:
+  - economic_indicator_data
+  - employment_data
+  - admin_region_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L4-20
+  level: 4
+  question: 老龄化越严重，医疗支出是不是越多？这个关系是简单的线性关系（年龄大=看病多=花钱多），还是被经济发展水平干扰了？2023年，先直接看老龄化率和医疗支出的关系，再看看排除GDP的影响后，这个关系还成立吗？
+  expected_analysis_type: anomaly
+  expected_indicators: []
+  expected_tables:
+  - population_data
+  - medical_health_data
+  - economic_indicator_data
+  - admin_region_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L5-01
+  level: 5
+  question: 2023年各省有几十个跨领域指标（经济、就业、教育、医疗、环境、人口、交通等），人类很难直接看懂这么多维度的数据。请用数据自身的方法把这些指标浓缩成2-3个核心维度，帮我解释每个维度代表什么（比如"经济活力""民生保障""环境质量"），然后用这些核心维度给各省的综合发展水平打分排名。对比一下这样算出来的排名和"简单平均"算出来的排名有什么不同。
+  expected_analysis_type: cross_domain
+  expected_indicators: []
+  expected_tables:
+  - economic_indicator_data
+  - employment_data
+  - edu_data
+  - medical_health_data
+  - env_monitor_data
+  - population_data
+  - admin_region_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L5-02
+  level: 5
+  question: "经济、环境、社会系统之间的关系很复杂，不是简单的\"线性\"关系能描述的。2023年，请帮我分析以下几组关系，看看它们之间有没有复杂的、非线性的信息重叠：\n\
+    \  - 经济增长（GDP增长率）和空气质量（PM2.5）\n  - 教育投入（教育支出）和教育成果（识字率）\n  - 医疗资源和人口老龄化（千人床位数和老龄化率）\n\
+    \  - 投资和就业（固定资产投资增长率和失业率）\n  对比\"简单相关分析\"和\"复杂关联分析\"两种方法的结果差异——如果差异很大，说明这些关系可能不是简单的直线关系。"
+  expected_analysis_type: cross_domain
+  expected_indicators: []
+  expected_tables:
+  - economic_indicator_data
+  - env_monitor_data
+  - edu_data
+  - medical_health_data
+  - population_data
+  - employment_data
+  - admin_region_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L5-03
+  level: 5
+  question: "一个省的发展健康与否，不能只看经济——要看经济、民生、教育、环境、人口结构五个系统是否协调。请用系统协调度模型，评估2023年各省五个系统的协调发展水平。我需要知道：\n\
+    \  1. 哪些省份五个方面都发展得不错（整体协调度最高）？\n  2. 哪些省份有明显的\"短板\"（某个方面严重落后）？\n  3. 哪些省份各方面发展最均衡（差距最小）？"
+  expected_analysis_type: cross_domain
+  expected_indicators: []
+  expected_tables:
+  - economic_indicator_data
+  - employment_data
+  - medical_health_data
+  - edu_data
+  - env_monitor_data
+  - population_data
+  - admin_region_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L5-04
+  level: 5
+  question: 2020年到2023年全国季度GDP数据中，既有长期增长趋势，又有短期波动（比如疫情冲击、政策刺激等）。我想把"趋势"和"波动"分开：先去掉趋势，只看波动部分，然后找出波动特别大的季度（无论正向还是负向）。最后结合重大政策或事件（如疫情、经济刺激计划）来分析每个异常波动的原因。
+  expected_analysis_type: trend
+  expected_indicators: []
+  expected_tables:
+  - economic_indicator_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L5-05
+  level: 5
+  question: "房地产投资和经济增长之间的关系很复杂——是房地产带动了经济，还是经济好了房地产才热？我想用多种方法，从不同角度分析两者的关系：\n  -\
+    \ 它们在同一时期的相关性如何？\n  - 排除极端值的影响后，关系还稳不稳固？\n  - 房地产投资是否提前于GDP变化（比如提前半年到一年）？\n  综合所有分析，判断房地产投资是经济的\"\
+    领先指标\"\"同步指标\"还是\"滞后指标\"？"
+  expected_analysis_type: trend
+  expected_indicators: []
+  expected_tables:
+  - real_estate_data
+  - economic_indicator_data
+  - admin_region_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L5-06
+  level: 5
+  question: 都说经济增长能带动就业，但这个"带动能力"这些年是在增强还是减弱？我想算算每年GDP每增长1%，就业人口增长百分之几（就业弹性），然后看这个弹性值的变化趋势。如果弹性越来越低，说明"增长不带动就业"的问题确实存在——经济在增长但就业没跟上。弹性是否在某一年发生了明显转折？
+  expected_analysis_type: trend
+  expected_indicators: []
+  expected_tables:
+  - employment_data
+  - economic_indicator_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L5-07
+  level: 5
+  question: 我想对2023年各省的综合实力做一个全面的排名——不是简单看GDP，而是分两步：第一步，在经济、民生、教育、环境、交通、人口结构这六个领域分别打分（每个领域选2个核心指标，计算百分位排名均值作为领域分）；第二步，用数据自身说话来确定六个领域的权重（不需要人工设定），再算出综合排名。最后对比一下：用数据定权重排出来的名次，和"六个领域等权重"排出来的名次有多大差异？哪些省份因为权重调整名次发生了明显变化？
+  expected_analysis_type: rank
+  expected_indicators: []
+  expected_tables:
+  - 全部10张表
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L5-08
+  level: 5
+  question: 我想评估2023年各省的"营商环境"——看企业活跃度（每万人企业数、私营企业占比）、交通便利度（货运量、客运量）、经济基础（人均GDP、固定资产投资）和人力资源（大学生数、识字率）四个维度，用数据自动定权重给各省排名。然后把"营商环境排名"和"GDP排名"对比，看看哪些省份的营商环境排名远高于其经济排名（说明制度环境好但经济潜力还没完全释放），哪些省份刚好相反。
+  expected_analysis_type: rank
+  expected_indicators: []
+  expected_tables:
+  - enterprise_data
+  - transport_data
+  - economic_indicator_data
+  - edu_data
+  - population_data
+  - admin_region_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L5-09
+  level: 5
+  question: 2023年，如果以综合实力最强的省份（排名第一）为"标杆"，其他各省与标杆的差距到底有多大？对人均GDP、识字率、千人床位数、森林覆盖率、失业率、老龄化率（后两个反向）这6个指标，分别算算每个省与标杆省的差距百分比，然后汇总成一个"综合差距分"。哪些省份离标杆最近（差距<10%）？哪些省份差距最大（差距>50%）？各自的短板在哪里？
+  expected_analysis_type: rank
+  expected_indicators: []
+  expected_tables:
+  - economic_indicator_data
+  - edu_data
+  - medical_health_data
+  - env_monitor_data
+  - employment_data
+  - population_data
+  - admin_region_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L5-10
+  level: 5
+  question: 从"区域（东部/中部/西部/东北）× 时间（2021/2022/2023年）× 经济指标（GDP/财政收入/固定资产投资）"三个维度做一个全面的交叉分析。我需要看到：每个区域每年的GDP变化趋势、每个区域每年的"财政收入/GDP"比例（经济含金量）、以及哪些年份哪些区域的投资增长异常快。这样能全面了解我国区域经济的三维画像。
+  expected_analysis_type: multi_dim
+  expected_indicators: []
+  expected_tables:
+  - economic_indicator_data
+  - admin_region_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L5-11
+  level: 5
+  question: "如果把各省同时按\"经济水平（人均GDP）、民生水平（千人床位数）、环境质量（AQI）\"三个维度分成高、中、低四档，会产生很多种组合。我想找出两种极端情况：\n\
+    \  - \"全面优秀\"的省份：经济水平高 + 民生好 + 环境优\n  - \"全面堪忧\"的省份：经济水平低 + 民生差 + 环境差\n  同时看看在每种组合中各有多少个省份。这能告诉我：我国有多少省份实现了\"\
+    高质量发展\"，有多少还在\"粗放发展\"？"
+  expected_analysis_type: multi_dim
+  expected_indicators: []
+  expected_tables:
+  - economic_indicator_data
+  - medical_health_data
+  - env_monitor_data
+  - employment_data
+  - admin_region_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L5-12
+  level: 5
+  question: 我想全面评价2023年各省的"民生保障水平"，分三个大方面：医疗服务（每万人医院数、千人床位数、千人医生数）、教育保障（大学生占比、教育支出/人）、就业保障（平均工资、城镇就业占比、新增就业/万人）。先对每个小指标归一化，然后"大维度等权、小指标自动定权重"的二级结构计算综合分，输出排名。请同时准备好每个省的雷达图数据，让我能直观看到各维度的强弱。
+  expected_analysis_type: multi_dim
+  expected_indicators: []
+  expected_tables:
+  - medical_health_data
+  - edu_data
+  - employment_data
+  - population_data
+  - admin_region_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L5-13
+  level: 5
+  question: "\"教育投入能推动经济增长\"这个说法流传很广，但我想用多种方法层层验证：\n  - 第一层：简单看教育支出增长率和GDP增长率之间的弹性关系\n\
+    \  - 第二层：用多年的数据建一个模型，把投资、人口等因素都控制住，看教育投入的独立贡献\n  - 第三层：用季度数据检验\"先有教育投入，后有经济增长\"\
+    这个时间先后顺序是否成立\n  三种方法的结果一致吗？如果矛盾，哪个结论更可信？教育到底是不是经济增长的\"发动机\"？"
+  expected_analysis_type: correlation
+  expected_indicators: []
+  expected_tables:
+  - edu_data
+  - economic_indicator_data
+  - population_data
+  - admin_region_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L5-14
+  level: 5
+  question: 有个说法叫"环境 Kuznets 曲线"——经济发展初期环境会恶化，但过了某个拐点后，经济增长反而会改善环境。我想用数据验证一下这个说法：2020年到2023年，各省的PM2.5和GDP之间的关系是什么？用"脱钩指数"来算：经济增长的同时，污染是在同步增长（未脱钩）、增速放缓（相对脱钩）还是绝对下降（强脱钩）？各省处于什么阶段？产业升级（服务业占比提高）是否有助于实现脱钩？
+  expected_analysis_type: correlation
+  expected_indicators: []
+  expected_tables:
+  - env_monitor_data
+  - economic_indicator_data
+  - admin_region_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L5-15
+  level: 5
+  question: 2023年，各省的医疗资源配置到底是"供过于求"还是"供不应求"？我想根据各省的人口规模和老龄化程度，算出一个"理论上应该有多少医疗资源"的合理值，然后对比实际值。如果实际远低于理论值，说明存在"医疗资源供给不足"——这些省份的居民看病可能很困难。哪些省份存在严重的医疗供给不足？这些省份是经济欠发达地区吗？
+  expected_analysis_type: correlation
+  expected_indicators: []
+  expected_tables:
+  - medical_health_data
+  - population_data
+  - admin_region_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L5-16
+  level: 5
+  question: "2023年，全国各省能不能根据经济、社会、环境等多维特征自动分成几类？比如有的省是\"经济发达型\"，有的是\"生态保护型\"，有的是\"\
+    均衡发展型\"。请用聚类分析：\n  - 使用人均GDP、城镇化率、第三产业占比、千人床位数、森林覆盖率、失业率六个指标\n  - 用科学方法自动确定\"\
+    分成几类最合适\"\n  - 输出每个类别的中心特征和包含的省份\n  - 为每个类别命名\n  - 看看同一类的省份在地理上是挨着的（聚集分布）还是分散的？"
+  expected_analysis_type: spatial
+  expected_indicators: []
+  expected_tables:
+  - economic_indicator_data
+  - population_data
+  - medical_health_data
+  - env_monitor_data
+  - employment_data
+  - admin_region_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L5-17
+  level: 5
+  question: 我想用另一种方法来给2023年各省分类——不是平面地切分，而是看各省之间的"亲疏关系"画成一棵树。用人均GDP、识字率、千人床位数、PM2.5、人均公路里程这些特征，做出一个树状图。从这个树状图能看出哪些省份最"像"（被最早合并在一起）？哪些省最"独特"（最后才被合并）？这个树状图的分组结果，和前面第Q5-L5-16题的分类结果一致吗？
+  expected_analysis_type: spatial
+  expected_indicators: []
+  expected_tables:
+  - economic_indicator_data
+  - edu_data
+  - medical_health_data
+  - env_monitor_data
+  - transport_data
+  - admin_region_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L5-18
+  level: 5
+  question: 我有一个很实际的问题：这些年中国各省之间的发展差距是在扩大还是在缩小？请用量化的方法算一下2020年和2023年各省人均GDP的差异水平。同时把差距分解成两部分：东部/中部/西部/东北四大板块之间的差距
+    + 每个板块内部的差距。看看省际差距主要是"板块之间的鸿沟"还是"板块内部的参差不齐"？再用同样的方法算一下医疗资源（千人床位数）的差距变化——经济差距和民生差距的演变趋势是一致的吗？
+  expected_analysis_type: spatial
+  expected_indicators: []
+  expected_tables:
+  - economic_indicator_data
+  - medical_health_data
+  - population_data
+  - admin_region_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L5-19
+  level: 5
+  question: "我想做一次全面的\"发展健康体检\"，对2020年到2023年全国各省的GDP增长率和失业率进行全面扫描，找出所有\"不对劲\"的信号：\n\
+    \  1. 先找出数值本身异常偏大或偏小的年份-省份\n  2. 再找出变化幅度异常大的年份-省份（和往年相比突然猛增或猛降）\n  3. 综合以上两者，标记\"\
+    高置信度异常\"\n  4. 对于这些异常点，从其他表中找找原因——是不是同期投资发生了突变？是不是人口发生了显著变化？\n  最终输出一份\"异常诊断报告\"\
+    。"
+  expected_analysis_type: anomaly
+  expected_indicators: []
+  expected_tables:
+  - economic_indicator_data
+  - employment_data
+  - population_data
+  - admin_region_data
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []
+- id: L5-20
+  level: 5
+  question: "请对2023年全国各省进行一次全面扫描，在一份报告中综合输出以下信息：\n  1. **极端表现**：任何指标上表现特别好或特别差的省份\n\
+    \  2. **突然变化**：相比往年变化幅度特别大的指标和省份\n  3. **资源不够用**：医疗、教育等资源供给不足（低于理论需求）的省份\n  4.\
+    \ **系统不协调**：经济-民生-环境之间发展失衡的省份\n  5. **\"另类\"省份**：用聚类方法找出的那些\"不像自己那类人\"的省份（距离聚类中心最远）\n\
+    \  这5个维度汇总成《2023年各省发展异常特征扫描报告》。"
+  expected_analysis_type: anomaly
+  expected_indicators: []
+  expected_tables:
+  - 全部10张表
+  expected_sql: ''
+  expected_ranges: {}
+  expected_keywords: []

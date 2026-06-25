@@ -1,0 +1,706 @@
+indicators:
+- name: 区划名称
+  aliases:
+  - 地区
+  - 区域
+  - 省份
+  - 城市
+  - 地名
+  type: category
+  table: admin_region_data
+  field: 区划名称
+- name: 区划级别
+  aliases:
+  - 级别
+  - 行政级别
+  - 层级
+  type: category
+  table: admin_region_data
+  field: 区划级别
+- name: 区划代码
+  aliases:
+  - 行政区划代码
+  - 地区代码
+  - 行政代码
+  type: category
+  table: admin_region_data
+  field: 区划代码
+- name: 面积
+  aliases:
+  - 行政区面积
+  - 土地面积
+  - 辖区面积
+  type: direct
+  table: admin_region_data
+  field: 面积
+- name: GDP
+  aliases:
+  - 国内生产总值
+  - 地区生产总值
+  type: direct
+  table: economic_indicator_data
+  field: GDP
+- name: GDP增长率
+  aliases:
+  - GDP增速
+  - 经济增长率
+  - 经济增速
+  type: direct
+  table: economic_indicator_data
+  field: GDP增长率
+- name: 人均GDP
+  aliases:
+  - 人均国内生产总值
+  - 人均地区生产总值
+  type: direct
+  table: economic_indicator_data
+  field: 人均GDP
+- name: 第一产业增加值
+  aliases:
+  - 第一产业
+  - 一产
+  - 第一产业产值
+  type: direct
+  table: economic_indicator_data
+  field: 第一产业
+- name: 第二产业增加值
+  aliases:
+  - 第二产业
+  - 二产
+  - 第二产业产值
+  type: direct
+  table: economic_indicator_data
+  field: 第二产业
+- name: 第三产业增加值
+  aliases:
+  - 第三产业
+  - 三产
+  - 服务业增加值
+  type: direct
+  table: economic_indicator_data
+  field: 第三产业
+- name: 产业结构比
+  aliases:
+  - 产业结构
+  - 三产结构
+  - 产业比例
+  type: computed
+  table: economic_indicator_data
+  formula: '第一产业 : 第二产业 : 第三产业'
+  field_mappings:
+    第一产业:
+      table: economic_indicator_data
+      column: 第一产业
+    第二产业:
+      table: economic_indicator_data
+      column: 第二产业
+    第三产业:
+      table: economic_indicator_data
+      column: 第三产业
+- name: 财政收入
+  aliases:
+  - 一般公共预算收入
+  - 地方财政收入
+  - 政府收入
+  type: direct
+  table: economic_indicator_data
+  field: 财政收入
+- name: 财政支出
+  aliases:
+  - 一般公共预算支出
+  - 地方财政支出
+  - 政府支出
+  type: direct
+  table: economic_indicator_data
+  field: 财政支出
+- name: 社会消费品零售总额
+  aliases:
+  - 社零
+  - 消费零售额
+  - 社会零售总额
+  type: direct
+  table: economic_indicator_data
+  field: 社会消费品零售总额
+- name: 固定资产投资
+  aliases:
+  - 固定投资
+  - 固投
+  - 固定资产投资额
+  type: direct
+  table: economic_indicator_data
+  field: 固定资产投资
+- name: 居民消费价格指数
+  aliases:
+  - CPI
+  - 物价指数
+  - 消费价格指数
+  type: direct
+  table: economic_indicator_data
+  field: 居民消费价格指数
+- name: 总人口
+  aliases:
+  - 常住人口
+  - 人口总量
+  - 人口数
+  - 总人数
+  type: direct
+  table: population_data
+  field: 总人口
+- name: 男性人口
+  aliases:
+  - 男性人数
+  - 男
+  type: direct
+  table: population_data
+  field: 男性人口
+- name: 女性人口
+  aliases:
+  - 女性人数
+  - 女
+  type: direct
+  table: population_data
+  field: 女性人口
+- name: 城镇人口
+  aliases:
+  - 城镇常住人口
+  - 市民
+  - 城市人口
+  type: direct
+  table: population_data
+  field: 城镇人口
+- name: 农村人口
+  aliases:
+  - 乡村人口
+  - 农民
+  - 农村常住人口
+  type: direct
+  table: population_data
+  field: 农村人口
+- name: 城镇化率
+  aliases:
+  - 城市化率
+  - 城镇人口比例
+  - 城市化水平
+  type: computed
+  table: population_data
+  formula: 城镇人口 / 总人口 * 100
+  field_mappings:
+    城镇人口:
+      table: population_data
+      column: 城镇人口
+    总人口:
+      table: population_data
+      column: 总人口
+- name: 出生率
+  aliases:
+  - 粗出生率
+  - 人口出生率
+  type: direct
+  table: population_data
+  field: 出生率
+- name: 死亡率
+  aliases:
+  - 粗死亡率
+  - 人口死亡率
+  type: direct
+  table: population_data
+  field: 死亡率
+- name: 自然增长率
+  aliases:
+  - 人口自然增长率
+  - 人口增速
+  type: direct
+  table: population_data
+  field: 自然增长率
+- name: 老龄化率
+  aliases:
+  - 老年人口比例
+  - 老年系数
+  - 老龄化程度
+  - 65岁以上比例
+  type: direct
+  table: population_data
+  field: 老龄化率
+- name: 识字率
+  aliases:
+  - 识字比例
+  - 识字人口比例
+  - 文盲率反向
+  type: direct
+  table: edu_data
+  field: 识字率
+- name: 高等教育入学率
+  aliases:
+  - 大学入学率
+  - 高教入学率
+  - 高等教育毛入学率
+  type: direct
+  table: edu_data
+  field: 高等教育入学率
+- name: 教育支出
+  aliases:
+  - 教育经费
+  - 教育投入
+  - 教育财政支出
+  type: direct
+  table: edu_data
+  field: 教育支出
+- name: 学校数量
+  aliases:
+  - 学校数
+  - 学校总数
+  - 各类学校数
+  type: computed
+  table: edu_data
+  formula: 小学数量 + 中学数量 + 大学数量
+  field_mappings:
+    小学数量:
+      table: edu_data
+      column: 小学数量
+    中学数量:
+      table: edu_data
+      column: 中学数量
+    大学数量:
+      table: edu_data
+      column: 大学数量
+- name: 在校学生数
+  aliases:
+  - 学生总数
+  - 在校生总数
+  type: computed
+  table: edu_data
+  formula: 小学生数 + 中学生数 + 大学生数
+  field_mappings:
+    小学生数:
+      table: edu_data
+      column: 小学生数
+    中学生数:
+      table: edu_data
+      column: 中学生数
+    大学生数:
+      table: edu_data
+      column: 大学生数
+- name: 小学数量
+  aliases:
+  - 小学数
+  - 小学
+  type: direct
+  table: edu_data
+  field: 小学数量
+- name: 小学生数
+  aliases:
+  - 小学在校生
+  - 小学生
+  type: direct
+  table: edu_data
+  field: 小学生数
+- name: 小学教师数
+  aliases:
+  - 小学教师
+  type: direct
+  table: edu_data
+  field: 小学教师数
+- name: 中学数量
+  aliases:
+  - 中学数
+  - 中学
+  type: direct
+  table: edu_data
+  field: 中学数量
+- name: 中学生数
+  aliases:
+  - 中学在校生
+  - 中学生
+  type: direct
+  table: edu_data
+  field: 中学生数
+- name: 中学教师数
+  aliases:
+  - 中学教师
+  type: direct
+  table: edu_data
+  field: 中学教师数
+- name: 大学数量
+  aliases:
+  - 高校数
+  - 大学
+  - 高等院校
+  type: direct
+  table: edu_data
+  field: 大学数量
+- name: 大学生数
+  aliases:
+  - 大学在校生
+  - 高校在校生
+  - 大学生
+  type: direct
+  table: edu_data
+  field: 大学生数
+- name: 大学教师数
+  aliases:
+  - 高校教师
+  type: direct
+  table: edu_data
+  field: 大学教师数
+- name: 就业人口
+  aliases:
+  - 就业人数
+  - 从业人员
+  - 就业
+  type: direct
+  table: employment_data
+  field: 就业人口
+- name: 失业人口
+  aliases:
+  - 失业人数
+  type: direct
+  table: employment_data
+  field: 失业人口
+- name: 失业率
+  aliases:
+  - 调查失业率
+  - 失业比例
+  type: direct
+  table: employment_data
+  field: 失业率
+- name: 城镇就业人口
+  aliases:
+  - 城镇就业
+  - 城镇从业人员
+  type: direct
+  table: employment_data
+  field: 城镇就业人口
+- name: 农村就业人口
+  aliases:
+  - 农村就业
+  - 农村从业人员
+  type: direct
+  table: employment_data
+  field: 农村就业人口
+- name: 平均工资
+  aliases:
+  - 平均薪酬
+  - 平均工资水平
+  - 薪资
+  type: direct
+  table: employment_data
+  field: 平均工资
+- name: 最低工资
+  aliases:
+  - 最低工资标准
+  - 最低薪资
+  type: direct
+  table: employment_data
+  field: 最低工资
+- name: 新增就业岗位
+  aliases:
+  - 新增就业
+  - 就业增量
+  - 新增就业人数
+  type: direct
+  table: employment_data
+  field: 新增就业岗位
+- name: 医院数量
+  aliases:
+  - 医院数
+  type: direct
+  table: medical_health_data
+  field: 医院数量
+- name: 诊所数量
+  aliases:
+  - 诊所数
+  - 基层医疗机构数
+  type: direct
+  table: medical_health_data
+  field: 诊所数量
+- name: 医院床位数
+  aliases:
+  - 病床数
+  - 床位
+  - 医疗床位
+  type: direct
+  table: medical_health_data
+  field: 医院床位数
+- name: 医生数量
+  aliases:
+  - 医师数
+  - 执业医师数
+  - 医生
+  type: direct
+  table: medical_health_data
+  field: 医生数量
+- name: 护士数量
+  aliases:
+  - 护士数
+  - 护理人员数
+  type: direct
+  table: medical_health_data
+  field: 护士数量
+- name: 千人床位数
+  aliases:
+  - 每千人床位数
+  - 千人均床位数
+  type: direct
+  table: medical_health_data
+  field: 千人床位数
+- name: 千人医生数
+  aliases:
+  - 每千人医生数
+  - 千人均医生数
+  type: direct
+  table: medical_health_data
+  field: 千人医生数
+- name: 门诊就诊人次
+  aliases:
+  - 门诊量
+  - 门诊人次
+  type: direct
+  table: medical_health_data
+  field: 门诊就诊人次
+- name: 住院人次
+  aliases:
+  - 住院量
+  - 住院人数
+  type: direct
+  table: medical_health_data
+  field: 住院人次
+- name: 医疗卫生支出
+  aliases:
+  - 医疗支出
+  - 卫生经费
+  - 医保支出
+  type: direct
+  table: medical_health_data
+  field: 医疗卫生支出
+- name: 企业数量
+  aliases:
+  - 企业数
+  - 企业总数
+  - 市场主体数
+  type: computed
+  table: enterprise_data
+  formula: COUNT(*)
+  field_mappings:
+    企业ID:
+      table: enterprise_data
+      column: 企业ID
+- name: 注册资本
+  aliases:
+  - 注册资金
+  - 资本金
+  type: direct
+  table: enterprise_data
+  field: 注册资本
+- name: 员工数量
+  aliases:
+  - 企业员工数
+  - 用工数
+  type: direct
+  table: enterprise_data
+  field: 员工数量
+- name: 年营收
+  aliases:
+  - 营业收入
+  - 年收入
+  - 营业额
+  - 营收
+  type: direct
+  table: enterprise_data
+  field: 年营收
+- name: 年纳税额
+  aliases:
+  - 纳税额
+  - 缴税
+  - 税收贡献
+  - 纳税
+  type: direct
+  table: enterprise_data
+  field: 年纳税额
+- name: 行业类型
+  aliases:
+  - 行业
+  - 所属行业
+  - 产业门类
+  type: category
+  table: enterprise_data
+  field: 行业类型
+- name: 企业类型
+  aliases:
+  - 企业类别
+  - 所有制
+  type: category
+  table: enterprise_data
+  field: 企业类型
+- name: 空气质量指数
+  aliases:
+  - AQI
+  - 空气指数
+  - 空气质量
+  type: direct
+  table: env_monitor_data
+  field: 空气质量指数
+- name: PM2.5
+  aliases:
+  - 细颗粒物
+  - PM2.5浓度
+  type: direct
+  table: env_monitor_data
+  field: PM2.5
+- name: PM10
+  aliases:
+  - 可吸入颗粒物
+  - PM10浓度
+  type: direct
+  table: env_monitor_data
+  field: PM10
+- name: 空气质量等级
+  aliases:
+  - 空气等级
+  - 空气质量类别
+  - AQI等级
+  type: direct
+  table: env_monitor_data
+  field: 空气质量等级
+- name: 水质达标率
+  aliases:
+  - 水质合格率
+  - 地表水达标率
+  type: direct
+  table: env_monitor_data
+  field: 水质达标率
+- name: 森林覆盖率
+  aliases:
+  - 森林覆盖
+  - 森林覆盖率
+  type: direct
+  table: env_monitor_data
+  field: 森林覆盖率
+- name: 绿化覆盖率
+  aliases:
+  - 绿化率
+  - 绿化覆盖
+  - 绿化覆盖率
+  type: direct
+  table: env_monitor_data
+  field: 绿化覆盖率
+- name: 固体废物处理量
+  aliases:
+  - 固废处理量
+  - 垃圾处理量
+  - 固废
+  type: direct
+  table: env_monitor_data
+  field: 固体废物处理量
+- name: 污水处理率
+  aliases:
+  - 污水达标率
+  - 污水处理
+  type: direct
+  table: env_monitor_data
+  field: 污水处理率
+- name: 平均房价
+  aliases:
+  - 房价
+  - 均价
+  - 房屋均价
+  - 住房均价
+  type: direct
+  table: real_estate_data
+  field: 平均房价
+- name: 新建住宅面积
+  aliases:
+  - 新开工面积
+  - 新建面积
+  type: direct
+  table: real_estate_data
+  field: 新建住宅面积
+- name: 已售住宅面积
+  aliases:
+  - 销售面积
+  - 住宅销售面积
+  - 成交面积
+  type: direct
+  table: real_estate_data
+  field: 已售住宅面积
+- name: 住宅销售额
+  aliases:
+  - 房产销售额
+  - 卖房收入
+  type: direct
+  table: real_estate_data
+  field: 住宅销售额
+- name: 施工面积
+  aliases:
+  - 在建面积
+  type: direct
+  table: real_estate_data
+  field: 施工面积
+- name: 竣工面积
+  aliases:
+  - 完工面积
+  - 交付面积
+  type: direct
+  table: real_estate_data
+  field: 竣工面积
+- name: 房地产投资
+  aliases:
+  - 房产投资
+  - 房地产开发投资额
+  type: direct
+  table: real_estate_data
+  field: 房地产投资
+- name: 公路里程
+  aliases:
+  - 公路长度
+  - 公路通车里程
+  type: direct
+  table: transport_data
+  field: 公路里程
+- name: 铁路里程
+  aliases:
+  - 铁路长度
+  - 铁路运营里程
+  type: direct
+  table: transport_data
+  field: 铁路里程
+- name: 地铁里程
+  aliases:
+  - 轨道交通里程
+  - 地铁长度
+  type: direct
+  table: transport_data
+  field: 地铁里程
+- name: 民用车辆数
+  aliases:
+  - 民用汽车
+  - 汽车保有量
+  - 民用汽车数
+  type: direct
+  table: transport_data
+  field: 民用车辆数
+- name: 客运量
+  aliases:
+  - 客运人数
+  - 客运
+  type: direct
+  table: transport_data
+  field: 客运量
+- name: 货运量
+  aliases:
+  - 货运吨数
+  - 货运
+  type: direct
+  table: transport_data
+  field: 货运量
+- name: 机场数量
+  aliases:
+  - 机场数
+  type: direct
+  table: transport_data
+  field: 机场数量
+- name: 港口数量
+  aliases:
+  - 港口数
+  type: direct
+  table: transport_data
+  field: 港口数量

@@ -1,0 +1,74 @@
+# ============================================================
+# ChatBI Agent — Git 忽略规则
+# ============================================================
+
+# ── 敏感信息（绝对不上传）──
+.env
+backend/.env
+!.env.example
+
+# ── Python ──
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# ── Node.js / Frontend ──
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+
+# ── 缓存和运行时 ──
+cache/
+backend/_cache/
+*.sqlite3
+*.db
+*.db-shm
+*.db-wal
+
+# ── 日志 ──
+*.log
+backend.log
+frontend.log
+
+# ── Benchmark 输出（测试运行结果）──
+benchmark_*.json
+benchmark_*.log
+benchmark_runner_v8.py
+bench_*.json
+
+# ── 临时/调试脚本 ──
+_check_schema.py
+_extract_cols.py
+fix_orchestrator.py
+run_benchmark_wrapper.py
+test_trend_sql.py
+analyze_report.py
+_schema_output.json
+
+# ── 开发过程文件 ──
+测试遇到的问题/
+
+# ── IDE ──
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ── 嵌套 Git 仓库 ──
+frontend/.git/
+
+# ── 模型权重（如有）──
+*.bin
+*.pt
+*.onnx
+models/
