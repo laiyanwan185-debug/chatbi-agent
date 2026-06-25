@@ -77,20 +77,16 @@ ChatBI：自动生成 SQL → 查询数据库 → 排名计算 → 图表展示 
 
 ```mermaid
 graph LR
-    A["用户提问"] --> B["Parser<br/>意图识别 + SQL 生成"]
-    B --> C["PlanValidator<br/>表名校验 + 字段补充"]
-    C --> D{"SQLBuilder<br/>能否确定性构建？"}
-    D -->|是| E["SQLBuilder<br/>直接组装 SQL"]
-    D -->|否| F["LLM raw_sql<br/>复杂查询"]
-    E --> G["DAGExecutor<br/>执行 SQL + 分析节点"]
+    A[用户提问] --> B[Parser 意图识别]
+    B --> C[PlanValidator 校验]
+    C --> D{SQLBuilder 能否构建?}
+    D -->|是| E[SQLBuilder 直接组装]
+    D -->|否| F[LLM 生成 SQL]
+    E --> G[DAGExecutor 执行]
     F --> G
-    G --> H["Analyzers<br/>趋势/排名/相关性/多维..."]
-    H --> I["LLM 解读<br/>结果解读 + 洞察生成"]
-    I --> J["前端展示<br/>图表 + 表格 + 洞察"]
-
-    style A fill:#e1f5fe
-    style J fill:#e8f5e9
-    style D fill:#fff3e0
+    G --> H[Analyzers 分析]
+    H --> I[LLM 解读]
+    I --> J[前端展示]
 ```
 
 **数据流说明**：
